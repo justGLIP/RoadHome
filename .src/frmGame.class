@@ -12,15 +12,15 @@ Public toDown As Short
 Public toLeft As Short
 Public xX As Short = 5
 Public yY As Short = 1
-Public aA As Short = 0
+Public zZ As Short = 0
 Public Player As Short = 10
 Public playersFigs As Short[] = [0, 0, 0, 0] 'Количество фишек на доске у игрока [X]
 Public playersBorders As Short[] = [4, 4, 4, 4] 'Количество бордюров на стороне игрока[X]
 Public toMove As Boolean = False 'кинул кубик, но не двинул фишку, хотя есть куда = true
 Public posMove As Boolean = False 'есть ли возможные ходы
 
-Public Sub Form_Show()
 
+Public Sub Form_Show()
 Dim j As Short
 'В зависимости от количества игроков скрываем в статистике фишки
    Select Case publicClass.Players
@@ -91,7 +91,7 @@ If moved = True Then 'если уже двинул фишку
    Select Case publicClass.board[GridView1.Row, GridView1.Column]
   
      Case 777 'если клик на поле, подсвеченное для движения прямо
-       publicClass.board[xX, yY] = aA
+       publicClass.board[xX, yY] = zZ
        GridView1[publicClass.FigXold, publicClass.FigYold].Clear 'очищаем клетку где была фишка
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
        publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold]
@@ -119,9 +119,9 @@ If moved = True Then 'если уже двинул фишку
        publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0 'обнуляем старое поле фишки после хода прямо
        xX = 5
        yY = 1
-       aA = 0
+       zZ = 0
        moved = True
-       toMove = False
+       If publicClass.Dice <> 6 Then toMove = False
       
        Dim direction As Short
        direction = publicClass.board[publicClass.FigXold, publicClass.FigYold] Mod 50
@@ -213,21 +213,21 @@ If moved = True Then 'если уже двинул фишку
        'Подвинул фишку прямо - дальше:
        ''ВОЗМОЖНО ТУТ НАДО ВСТАВИТЬ ПРОВЕРКУ НА ШЕСТЕРКУ
        recolor 'убираем желтый цвет поля
-       EndTurn 'Заканчиваем ход
+       If publicClass.Dice <> 6 Then EndTurn 'Заканчиваем ход
      
      Case 778 'если клик для движения с поворотом
-       publicClass.board[xX, yY] = aA
+       publicClass.board[xX, yY] = zZ
        GridView1[publicClass.FigXold, publicClass.FigYold].Clear 'очищаем клетку где была фишка
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
        publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
        publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0
        moved = True
-       toMove = False
+       If publicClass.Dice <> 6 Then toMove = False
        xX = 5
        yY = 1
-       aA = 0
+       zZ = 0
        recolor 'убираем желтый цвет поля
-       EndTurn
+       If publicClass.Dice <> 6 Then EndTurn
 
      Case Player + 1 'клик на фишку активного игрока, движущегося вверх 
        possibleMove(GridView1.Row, GridView1.Column, True)
@@ -245,7 +245,7 @@ If moved = True Then 'если уже двинул фишку
        possibleMove(GridView1.Row, GridView1.Column, True)
      Case Else
        recolor
-       publicClass.board[xX, yY] = aA
+       publicClass.board[xX, yY] = zZ
    End Select
   
   End If
@@ -266,12 +266,9 @@ Public Sub btnDice_Click()
   Else
    moved = False
    toMove = True  
-   Dim i, j, b As Short
+   Dim i, j As Short
    Dim throw As Sound
-   Dim x As Short[] = [3, 3, 3, 3]
-   Dim y As Short[] = [1, 1, 1, 1]
-   Dim a As Short = 0
-   ' DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
+   'DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
    publicClass.Dice = txtTest.Text
    recolor 'перекрашиваем поле
   
@@ -289,10 +286,10 @@ Public Sub btnDice_Click()
    Next
    btnDice.Picture = Picture.Load("Resources/Images/" & DiceImg[publicClass.Dice - 1])
   
-   If Not (publicClass.Dice = 6) And playersFigs[(Player / 10) - 1] = 0 Then ' если фишек на поле нет и не выпала шестерка, то конец хода
-     EndTurn
-   Endif
-  
+   'If Not (publicClass.Dice = 6) And playersFigs[(Player / 10) - 1] = 0 Then ' если фишек на поле нет и не выпала шестерка, то конец хода
+   '  EndTurn
+   'Endif
+   
    ''ЕСЛИ ВЫПАЛА ШЕСТЕРКА
    Dim aa, bb As Short
    If publicClass.Dice = 6 Then
@@ -446,14 +443,13 @@ Public Sub btnDice_Click()
          End Select
        Endif 'это про выставить ли новую фишку
      Endif 'это про если есть фигуры в запасе и поле дома не занято
-   Else 'если выпала не шестерка
-     Return
    End If
-  
-   ''проверяем, есть ли вообще возможные ходы
-   CheckMoves
+   
+   'Если выпала не 6 или не стал выставлять фишку
+   'проверяем, есть ли вообще возможные ходы
+   If publicClass.Dice <> 6 Then CheckMoves
   End If 
-
+  
   End
 
 Public Sub recolor() 'перекраска поля
@@ -483,11 +479,12 @@ End
 Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
 
   ''ПОДСВЕЧИВАЕМ ВОЗМОЖНЫЙ ХОД
-  Dim s As Short
+  Dim s, z As Short
   posMove = False
-  If publicClass.board[posX, posY] - Player < 10 And publicClass.board[posX, posY] - Player > 0 'если там где кликнули - фишка активного игрока
+  s = publicClass.board[posX, posY] - Player
+  If s < 10 And s > 0 'если там где кликнули - фишка активного игрока
    recolor
-   publicClass.board[xX, yY] = aA 'Возвращаем значение с предыдущего клика в норму
+   publicClass.board[xX, yY] = zZ 'Возвращаем значение с предыдущего клика в норму
 
    Select Case publicClass.board[posX, posY] - Player 'определяем куда эта фишка движется
      
@@ -495,17 +492,12 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
        If posX - publicClass.Dice >= 0 Then 'если ход умещается по вертикали
          xX = posX - publicClass.Dice 'Запоминаем изменяемые координаты
          yY = 0
-         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
         
-         '' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ - НЕ ДОДЕЛАНО РАБОТАЕТ ТОЛЬКО ДЛЯ 11
+         '' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ - НЕ ДОДЕЛАНО ДЛЯ ЧУЖИХ ФИШЕК И ДВИЖЕНИЯ НЕ ВВЕРХ
          For s = posX - 1 To posX - publicClass.Dice Step -1
-           Select Case publicClass.board[s, 0]
-             Case 11 'на пути своя фишка - хода нет
-               Return
-            
-             'здесь добавить определение чужих фишек
-              
-           End Select
+           z = publicClass.board[s, 0] - Player
+           If z > 0 And z < 10 Then Return 'на пути своя фишка - хода нет
          Next
         
          If light Then
@@ -521,7 +513,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            toRight = publicClass.Dice - posX
            xX = 0 'Запоминаем изменяемые координаты
            yY = toRight
-           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
            If light Then  
              GridView1[0, toRight].Background = Color.Yellow
              publicClass.board[0, toRight] = 778
@@ -535,7 +527,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
        If posY + publicClass.Dice <= 7 Then 'если ход умещается по горизонтали
          xX = 0 'Запоминаем изменяемые координаты
          yY = posY + publicClass.Dice
-         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
          If light Then  
            GridView1[0, posY + publicClass.Dice].Background = Color.Yellow
            publicClass.board[0, posY + publicClass.Dice] = 777
@@ -548,7 +540,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            toDown = publicClass.Dice - toRight
            xX = toDown 'Запоминаем изменяемые координаты
            yY = 7
-           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
            If light Then
              GridView1[toDown, 7].Background = Color.Yellow
              publicClass.board[toDown, 7] = 778
@@ -562,7 +554,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
        If posX + publicClass.Dice <= 7 Then 'если ход умещается по верикали
          xX = posX + publicClass.Dice 'Запоминаем изменяемые координаты
          yY = 7
-         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
          If light Then    
            GridView1[posX + publicClass.Dice, 7].Background = Color.Yellow
            publicClass.board[posX + publicClass.Dice, 7] = 777
@@ -575,7 +567,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            toLeft = publicClass.Dice - toDown
            xX = 7 'Запоминаем изменяемые координаты
            yY = 7 - toLeft
-           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
            If light Then
              GridView1[7, 7 - toLeft].Background = Color.Yellow
              publicClass.board[7, 7 - toLeft] = 778
@@ -589,7 +581,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
        If posY - publicClass.Dice >= 0 Then 'если ход умещается по горизонтали
          xX = 7 'Запоминаем изменяемые координаты
          yY = posY - publicClass.Dice
-         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
          If light Then  
            GridView1[7, posY - publicClass.Dice].Background = Color.Yellow
            publicClass.board[7, posY - publicClass.Dice] = 777
@@ -602,7 +594,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            toUp = publicClass.Dice - toLeft
            xX = 7 - toUp 'Запоминаем изменяемые координаты
            yY = toUp
-           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
            If light Then
              GridView1[7 - toUp, toUp].Background = Color.Yellow
              publicClass.board[7 - toUp, toUp] = 778
@@ -621,7 +613,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
          If publicClass.board[posX - 1, posY + 1] = 0 Or publicClass.Dice = 1 Then
            xX = posX - publicClass.Dice 'Запоминаем изменяемые координаты
            yY = posY + publicClass.Dice
-           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
            If light Then
              GridView1[posX - publicClass.Dice, posY + publicClass.Dice].Background = Color.Yellow
              publicClass.board[posX - publicClass.Dice, posY + publicClass.Dice] = 777
