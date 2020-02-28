@@ -1,0 +1,167 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,120,91.4286)
+  Resizable = False
+  AutoResize = True
+  { lblThree Label
+    MoveScaled(94,32,24,4)
+    Text = ("Третий игрок:")
+  }
+  { pctThree4 PictureBox
+    MoveScaled(112,36,6,6)
+    Picture = Picture["Resources/Images/chipRedWhite_border.png"]
+    Stretch = True
+  }
+  { pctThree3 PictureBox
+    MoveScaled(106,36,6,6)
+    Picture = Picture["Resources/Images/chipRedWhite_border.png"]
+    Stretch = True
+  }
+  { pctThree2 PictureBox
+    MoveScaled(100,36,6,6)
+    Picture = Picture["Resources/Images/chipRedWhite_border.png"]
+    Stretch = True
+  }
+  { pctThree1 PictureBox
+    MoveScaled(94,36,6,6)
+    Picture = Picture["Resources/Images/chipRedWhite_border.png"]
+    Stretch = True
+  }
+  { pctOne4 PictureBox
+    MoveScaled(112,14,6,6)
+    Picture = Picture["Resources/Images/chipGreenWhite_border.png"]
+    Stretch = True
+  }
+  { pctOne3 PictureBox
+    MoveScaled(106,14,6,6)
+    Picture = Picture["Resources/Images/chipGreenWhite_border.png"]
+    Stretch = True
+  }
+  { pctOne2 PictureBox
+    MoveScaled(100,14,6,6)
+    Picture = Picture["Resources/Images/chipGreenWhite_border.png"]
+    Stretch = True
+  }
+  { GridView1 GridView
+    MoveScaled(0,0,16,16)
+    ScrollBar = Scroll.None
+    AutoResize = False
+    Resizable = False
+  }
+  { btnDice Button
+    MoveScaled(100,77,11.4286,11.4286)
+    NoTabFocus = True
+  }
+  { Frame1 Frame
+    MoveScaled(93,2,26,73)
+    Margin = True
+    Text = ("Статус")
+    { lblStatus Label
+      MoveScaled(1,4,24,4)
+      Text = ("Фишки игроков")
+      Alignment = Align.Center
+    }
+    { lblFirstPlr Label grpFirst
+      Name = "lblFirstPlr"
+      MoveScaled(1,8,24,4)
+      Text = ("Первый игрок:")
+    }
+    { pctOne1 PictureBox grpFirst
+      Name = "pctOne1"
+      MoveScaled(1,12,6,6)
+      Picture = Picture["Resources/Images/chipGreenWhite_border.png"]
+      Stretch = True
+    }
+    { chkMusic CheckBox
+      MoveScaled(1,53,24,4)
+      Text = ("Музыка")
+      Value = CheckBox.True
+    }
+    { chkSound CheckBox
+      MoveScaled(1,57,24,4)
+      Text = ("Звуки")
+      Value = CheckBox.True
+    }
+    { !lbTest1 Label
+      MoveScaled(1,61,24,4)
+      #Public = True
+    }
+    { lblTest2 Label
+      MoveScaled(1,63,24,4)
+    }
+    { pctBox3 PictureBox
+      MoveScaled(0,31,25,11)
+      Visible = False
+      Background = Color.Background
+    }
+  }
+  { lblTwo Label
+    MoveScaled(94,21,24,4)
+    Text = ("Второй игрок:")
+  }
+  { pctTwo1 PictureBox
+    MoveScaled(94,25,6,6)
+    Picture = Picture["Resources/Images/chipBlueWhite_border.png"]
+    Stretch = True
+  }
+  { pctTwo2 PictureBox
+    MoveScaled(100,25,6,6)
+    Picture = Picture["Resources/Images/chipBlueWhite_border.png"]
+    Stretch = True
+  }
+  { pctTwo3 PictureBox
+    MoveScaled(106,25,6,6)
+    Picture = Picture["Resources/Images/chipBlueWhite_border.png"]
+    Stretch = True
+  }
+  { pctTwo4 PictureBox
+    MoveScaled(112,25,6,6)
+    Picture = Picture["Resources/Images/chipBlueWhite_border.png"]
+    Stretch = True
+  }
+  { lblFour Label
+    MoveScaled(94,43,24,4)
+    Text = ("Четвертый игрок:")
+  }
+  { pctFour1 PictureBox
+    MoveScaled(94,47,6,6)
+    Picture = Picture["Resources/Images/chipBlackWhite_border.png"]
+    Stretch = True
+  }
+  { pctFour2 PictureBox
+    MoveScaled(100,47,6,6)
+    Picture = Picture["Resources/Images/chipBlackWhite_border.png"]
+    Stretch = True
+  }
+  { pctFour3 PictureBox
+    MoveScaled(106,47,6,6)
+    Picture = Picture["Resources/Images/chipBlackWhite_border.png"]
+    Stretch = True
+  }
+  { pctFour4 PictureBox
+    MoveScaled(112,47,6,6)
+    Picture = Picture["Resources/Images/chipBlackWhite_border.png"]
+    Stretch = True
+  }
+  { btnTest Button
+    MoveScaled(113,82,4,4)
+    Background = Color.Green
+    Text = ("1")
+  }
+  { !txtTest TextBox
+    MoveScaled(113,77,4,4)
+    #Public = True
+  }
+  { lblTest3 Label
+    MoveScaled(94,67,24,4)
+  }
+  { lblTest4 Label
+    MoveScaled(94,69,24,4)
+  }
+  { pctBox4 PictureBox
+    MoveScaled(93,44,25,11)
+    Visible = False
+    Background = Color.Background
+  }
+}

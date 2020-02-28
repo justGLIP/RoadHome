@@ -1,0 +1,25 @@
+# Gambas Form File 3.0
+
+{ Form Form
+  MoveScaled(0,0,65,24)
+  { lblTitle Label
+    MoveScaled(0.4286,-1,63,13)
+    Font = Font["+9"]
+    Text = ("Дорога домой")
+    Alignment = Align.Center
+  }
+  { Button1 Button
+    MoveScaled(24,17,16,4)
+    Text = ("Старт!")
+  }
+  { SpinBox1 SpinBox
+    MoveScaled(43,12,6,4)
+    MinValue = 2
+    MaxValue = 4
+    Value = 2
+  }
+  { Label1 Label
+    MoveScaled(15,12,19,4)
+    Text = ("Количество игроков")
+  }
+}

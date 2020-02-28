@@ -1,0 +1,737 @@
+' Gambas class file
+
+
+Public DiceImg As String[] = ["dieRed1.png", "dieRed2.png", "dieRed3.png", "dieRed4.png", "dieRed5.png", "dieRed6.png"]
+Public ChipImg As String[] = ["chipGreenWhite_border.png", "chipBlueWhite_border.png", "chipRedWhite_border.png", "chipBlackWhite_border.png"]
+Public moved As Boolean = True 'подвинул фишку
+Public newX As Integer
+Public newY As Integer
+Public toUp As Short
+Public toRight As Short
+Public toDown As Short
+Public toLeft As Short
+Public xX As Short = 5
+Public yY As Short = 1
+Public aA As Short = 0
+Public Player As Short = 10
+Public playersFigs As Short[] = [0, 0, 0, 0] 'Количество фишек на доске у игрока [X]
+Public playersBorders As Short[] = [4, 4, 4, 4] 'Количество бордюров на стороне игрока[X]
+Public toMove As Boolean = False 'кинул кубик, но не двинул фишку, хотя есть куда = true
+Public posMove As Boolean = False 'есть ли возможные ходы
+
+Public Sub Form_Show()
+
+Dim j As Short
+'В зависимости от количества игроков скрываем в статистике фишки
+   Select Case publicClass.Players
+     Case 2
+       pctBox3.Visible = True
+       pctBox4.Visible = True
+     Case 3
+       pctBox4.Visible = True
+   End Select
+
+'Изменяем размер формы под поле 8х8
+   With btnDice
+     .x = 700
+     .y = 540
+     .Width = 80
+     .height = 80
+     .Picture = Picture.Load("Resources/Images/dieRed1.png")
+   End With
+   
+   With Me
+     .Width = 840
+     .height = 640
+   End With
+
+   With GridView1
+     .Columns.Count = 8
+     .Rows.Count = 8
+     .Rows.Height = 80
+     .Columns.Width = 80
+     .Width = 640
+     .Height = 640
+   End With
+
+''рисуем шахматную доску и расставляем бордюры
+   recolor
+   For j = 0 To 7
+     GridView1[j, j].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+     GridView1[j, j].Alignment = 3
+     publicClass.board[j, j] = 888
+     GridView1[7 - j, j].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+     GridView1[7 - j, j].Alignment = 3
+     publicClass.board[7 - j, j] = 888
+   Next
+
+'' Запускаем фоновую музыку
+   Music.Load("Resources/Audio/Kai_Engel_-_09_-_Homeroad.mp3")
+   Music.Play(-1)
+
+End
+
+
+Public Sub Form_Close()
+
+   frmStart.Close
+   frmTemp.Close
+End
+
+
+Public Sub GridView1_Click()
+
+frmTemp.redraw 'Перерисовываем временную (отладочную) форму
+
+If moved = True Then 'если уже двинул фишку
+   Return 'Не реагировать на клики по полю
+  Else 'а иначе
+  
+   ''СМОТРИМ, КУДА КЛИКНУЛИ
+   Select Case publicClass.board[GridView1.Row, GridView1.Column]
+  
+     Case 777 'если клик на поле, подсвеченное для движения прямо
+       publicClass.board[xX, yY] = aA
+       GridView1[publicClass.FigXold, publicClass.FigYold].Clear 'очищаем клетку где была фишка
+       GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
+       publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold]
+
+       Select Case GridView1.Row
+         Case 0
+           Select Case GridView1.Column
+             Case 0
+               publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               playersBorders[1] -= 1
+             Case 7
+               publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               playersBorders[2] -= 1
+           End Select
+         Case 7
+           Select Case GridView1.Column
+             Case 0
+               If publicClass.board[publicClass.FigXold, publicClass.FigYold] = 14 Then publicClass.board[7, 0] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               playersBorders[0] -= 1
+             Case 7
+               publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               playersBorders[3] -= 1
+           End Select
+       End Select
+       publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0 'обнуляем старое поле фишки после хода прямо
+       xX = 5
+       yY = 1
+       aA = 0
+       moved = True
+       toMove = False
+      
+       Dim direction As Short
+       direction = publicClass.board[publicClass.FigXold, publicClass.FigYold] Mod 50
+       If direction <> 5 Then 'если фишка движется не в дом
+         If publicClass.FigXold = 7 And publicClass.FigYold = 0 Then 'заполняем первые границы (бордеры)
+           publicClass.board[7, 0] = 888 'запоминаем, что на угловой клетке теперь бордюр
+           Select Case playersBorders[0] 
+             Case 3
+               GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[4, 3].Clear
+               publicClass.board[4, 3] = 0
+             Case 2
+               GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[5, 2].Clear
+               publicClass.board[5, 2] = 0
+             Case 1
+               GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[6, 1].Clear
+               publicClass.board[6, 1] = 0
+             Case 0
+               publicClass.board[7, 0] = 0
+           End Select
+         Endif
+         
+         If publicClass.FigXold = 0 And publicClass.FigYold = 0 Then 'заполняем вторые границы (бордеры)
+           publicClass.board[0, 0] = 888 'запоминаем, что на угловой клетке теперь бордюр
+           Select Case playersBorders[1] 
+             Case 3
+               GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[3, 3].Clear
+               publicClass.board[3, 3] = 0
+             Case 2
+               GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[2, 2].Clear
+               publicClass.board[2, 2] = 0
+             Case 1
+               GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[1, 1].Clear
+               publicClass.board[1, 1] = 0
+             Case 0
+               publicClass.board[0, 0] = 0
+           End Select  
+         Endif
+         
+         If publicClass.FigXold = 0 And publicClass.FigYold = 7 Then 'заполняем третьи границы (бордеры)
+           publicClass.board[0, 7] = 888 'запоминаем, что на угловой клетке теперь бордюр
+           Select Case playersBorders[2] 
+             Case 3
+               GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[3, 4].Clear
+               publicClass.board[3, 4] = 0
+             Case 2
+               GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[2, 5].Clear
+               publicClass.board[2, 5] = 0
+             Case 1
+               GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[1, 6].Clear
+               publicClass.board[1, 6] = 0
+             Case 0
+               publicClass.board[0, 7] = 0
+           End Select  
+         Endif
+         
+         If publicClass.FigXold = 7 And publicClass.FigYold = 7 Then 'заполняем четвертые границы (бордеры)
+           publicClass.board[7, 7] = 888 'запоминаем, что на угловой клетке теперь бордюр
+           Select Case playersBorders[3] 'publicClass.pFourBorders
+             Case 3
+               GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[4, 4].Clear
+               publicClass.board[4, 4] = 0
+             Case 2
+               GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[5, 5].Clear
+               publicClass.board[5, 5] = 0
+             Case 1
+               GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+               GridView1[6, 6].Clear
+               publicClass.board[6, 6] = 0
+             Case 0
+               publicClass.board[7, 7] = 0
+           End Select  
+         Endif
+        
+       Else 'Если фишка движется в дом
+          '' ТУТ НАДО ЧТО-ТО СДЕЛАТЬ, ЕСЛИ ХОТИМ, ЧТОБЫ ЗА ДВИЖУЩЕЙСЯ В ДОМ ФИШКОЙ ЗАКРЫВАЛСЯ БОРДЮР 
+       Endif
+      
+       'Подвинул фишку прямо - дальше:
+       ''ВОЗМОЖНО ТУТ НАДО ВСТАВИТЬ ПРОВЕРКУ НА ШЕСТЕРКУ
+       recolor 'убираем желтый цвет поля
+       EndTurn 'Заканчиваем ход
+     
+     Case 778 'если клик для движения с поворотом
+       publicClass.board[xX, yY] = aA
+       GridView1[publicClass.FigXold, publicClass.FigYold].Clear 'очищаем клетку где была фишка
+       GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
+       publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+       publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0
+       moved = True
+       toMove = False
+       xX = 5
+       yY = 1
+       aA = 0
+       recolor 'убираем желтый цвет поля
+       EndTurn
+
+     Case Player + 1 'клик на фишку активного игрока, движущегося вверх 
+       possibleMove(GridView1.Row, GridView1.Column, True)
+     
+     Case Player + 2
+       possibleMove(GridView1.Row, GridView1.Column, True)
+     
+     Case Player + 3 
+       possibleMove(GridView1.Row, GridView1.Column, True)
+     
+     Case Player + 4 
+       possibleMove(GridView1.Row, GridView1.Column, True)
+     
+     Case Player + 5 
+       possibleMove(GridView1.Row, GridView1.Column, True)
+     Case Else
+       recolor
+       publicClass.board[xX, yY] = aA
+   End Select
+  
+  End If
+
+End
+
+Public Sub DiceThrow() 'бросаем кубик
+
+  Randomize
+  publicClass.Dice = Int(Rnd(1, 7))
+
+End
+
+Public Sub btnDice_Click()
+
+  If toMove = True Then 
+   Return 'это чтобы не давать кидать кубик несколько раз
+  Else
+   moved = False
+   toMove = True  
+   Dim i, j, b As Short
+   Dim throw As Sound
+   Dim x As Short[] = [3, 3, 3, 3]
+   Dim y As Short[] = [1, 1, 1, 1]
+   Dim a As Short = 0
+   ' DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
+   publicClass.Dice = txtTest.Text
+   recolor 'перекрашиваем поле
+  
+   'звук броска
+   If chkSound.Value Then
+     throw = Sound.Load("Resources/Audio/diceThrow3.ogg")
+     throw.Play
+   Endif
+  
+   'анимация броска
+   For i = 0 To 10
+     j = Int(Rnd(1, 7)) - 1
+     btnDice.Picture = Picture.Load("Resources/Images/" & DiceImg[j])
+     Wait 0.1
+   Next
+   btnDice.Picture = Picture.Load("Resources/Images/" & DiceImg[publicClass.Dice - 1])
+  
+   If Not (publicClass.Dice = 6) And playersFigs[(Player / 10) - 1] = 0 Then ' если фишек на поле нет и не выпала шестерка, то конец хода
+     EndTurn
+   Endif
+  
+   ''ЕСЛИ ВЫПАЛА ШЕСТЕРКА
+   Dim aa, bb As Short
+   If publicClass.Dice = 6 Then
+     toMove = False
+     Select Case Player 'задаем стартовую точку в зависимости от активного игрока
+       Case 10 'первый игрок
+         aa = 7
+         bb = 0
+       Case 20
+         aa = 0
+         bb = 0
+       Case 30
+         aa = 0
+         bb = 7
+       Case 40
+         aa = 7
+         bb = 7
+     End Select
+    
+     Dim pl As Short
+     pl = publicClass.board[aa, bb] - Player
+    
+     If playersFigs[(Player / 10) - 1] < 4 And (pl > 10 Or pl < 0) Then 'если есть фигуры в запасе и поле дома не занято
+       Message.Title = "Как поступите?"
+       If (Message.Question("Выставить новую фишку?", "Да", "Нет")) = 1 Then
+         'выставить фишку
+         moved = True
+         GridView1[aa, bb].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1])
+         playersBorders[(Player / 10) - 1] -= 1  'количество бордюров на этой стороне уменьшилось
+         playersFigs[(Player / 10) - 1] += 1 'количество фигур игрока на поле увеличилось
+         publicClass.board[aa, bb] = Player + (Player / 10) 'на клетку выставлена фигура игрока X с направлением хода по первой линии
+        
+         ''ИЗМЕНЕНИЕ КОЛИЧЕСТВА ФИШЕК В РАМКЕ СТАТУСА
+         Select Case Player
+
+           Case 10 'Для первого игрока
+             Select Case playersFigs[0] 
+               Case 0 'на поле не осталось фигур первого игрока
+                 pctOne4.Visible = True
+                 pctOne3.Visible = True
+                 pctOne2.Visible = True
+                 pctOne1.Visible = True  
+               Case 1 'на поле одна фигура первого игрока
+                 pctOne4.Visible = False
+                 pctOne3.Visible = True
+                 pctOne2.Visible = True
+                 pctOne1.Visible = True
+               Case 2
+                 pctOne4.Visible = False
+                 pctOne3.Visible = False
+                 pctOne2.Visible = True
+                 pctOne1.Visible = True
+               Case 3
+                 pctOne4.Visible = False
+                 pctOne3.Visible = False
+                 pctOne2.Visible = False
+                 pctOne1.Visible = True
+               Case 4
+                 pctOne4.Visible = False
+                 pctOne3.Visible = False
+                 pctOne2.Visible = False
+                 pctOne1.Visible = False  
+             End Select
+          
+           Case 20 'Для второго игрока
+             Select Case playersFigs[1] 
+               Case 0 'на поле не осталось фигур
+                 pctTwo4.Visible = True
+                 pctTwo3.Visible = True
+                 pctTwo2.Visible = True
+                 pctTwo1.Visible = True
+               Case 1 'на поле одна фигура
+                 pctTwo4.Visible = False
+                 pctTwo3.Visible = True
+                 pctTwo2.Visible = True
+                 pctTwo1.Visible = True
+               Case 2
+                 pctTwo4.Visible = False
+                 pctTwo3.Visible = False
+                 pctTwo2.Visible = True
+                 pctTwo1.Visible = True
+               Case 3
+                 pctTwo4.Visible = False
+                 pctTwo3.Visible = False
+                 pctTwo2.Visible = False
+                 pctTwo1.Visible = True
+               Case 4
+                 pctTwo4.Visible = False
+                 pctTwo3.Visible = False
+                 pctTwo2.Visible = False
+                 pctTwo1.Visible = False  
+             End Select
+          
+           Case 30 'Для третьего игрока
+             Select Case playersFigs[2] 
+               Case 0 'на поле не осталось фигур
+                 pctThree4.Visible = True
+                 pctThree3.Visible = True
+                 pctThree2.Visible = True
+                 pctThree1.Visible = True  
+               Case 1 'на поле одна фигура
+                 pctThree4.Visible = False
+                 pctThree3.Visible = True
+                 pctThree2.Visible = True
+                 pctThree1.Visible = True
+               Case 2
+                 pctThree4.Visible = False
+                 pctThree3.Visible = False
+                 pctThree2.Visible = True
+                 pctThree1.Visible = True
+               Case 3
+                 pctThree4.Visible = False
+                 pctThree3.Visible = False
+                 pctThree2.Visible = False
+                 pctThree1.Visible = True
+               Case 4
+                 pctThree4.Visible = False
+                 pctThree3.Visible = False
+                 pctThree2.Visible = False
+                 pctThree1.Visible = False  
+             End Select
+            
+           Case 40 'Для четвертого игрока
+             Select Case playersFigs[3] 
+               Case 0 'на поле не осталось фигур
+                 pctFour4.Visible = True
+                 pctFour3.Visible = True
+                 pctFour2.Visible = True
+                 pctFour1.Visible = True  
+               Case 1 'на поле одна фигура
+                 pctFour4.Visible = False
+                 pctFour3.Visible = True
+                 pctFour2.Visible = True
+                 pctFour1.Visible = True
+               Case 2
+                 pctFour4.Visible = False
+                 pctFour3.Visible = False
+                 pctFour2.Visible = True
+                 pctFour1.Visible = True
+               Case 3
+                 pctFour4.Visible = False
+                 pctFour3.Visible = False
+                 pctFour2.Visible = False
+                 pctFour1.Visible = True
+               Case 4
+                 pctFour4.Visible = False
+                 pctFour3.Visible = False
+                 pctFour2.Visible = False
+                 pctFour1.Visible = False  
+           End Select    
+         End Select
+       Endif 'это про выставить ли новую фишку
+     Endif 'это про если есть фигуры в запасе и поле дома не занято
+   Else 'если выпала не шестерка
+     Return
+   End If
+  
+   ''проверяем, есть ли вообще возможные ходы
+   CheckMoves
+  End If 
+
+  End
+
+Public Sub recolor() 'перекраска поля
+
+  Dim i, j As Short
+  For i = 0 To 7
+   For j = 0 To 6 Step 2
+     If i Mod 2 = 0 Then
+       GridView1[i, j].Background = 123
+       GridView1[i, j + 1].Background = 321
+     Else
+       GridView1[i, j].Background = 321
+       GridView1[i, j + 1].Background = 123
+     Endif
+   Next
+  Next
+
+End
+
+
+Public Sub chkMusic_Click()
+
+  If chkMusic.Value Then Music.play(-1) Else Music.Stop
+
+End
+
+Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
+
+  ''ПОДСВЕЧИВАЕМ ВОЗМОЖНЫЙ ХОД
+  Dim s As Short
+  posMove = False
+  If publicClass.board[posX, posY] - Player < 10 And publicClass.board[posX, posY] - Player > 0 'если там где кликнули - фишка активного игрока
+   recolor
+   publicClass.board[xX, yY] = aA 'Возвращаем значение с предыдущего клика в норму
+
+   Select Case publicClass.board[posX, posY] - Player 'определяем куда эта фишка движется
+     
+     Case 1 'если вверх
+       If posX - publicClass.Dice >= 0 Then 'если ход умещается по вертикали
+         xX = posX - publicClass.Dice 'Запоминаем изменяемые координаты
+         yY = 0
+         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+        
+         '' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ - НЕ ДОДЕЛАНО РАБОТАЕТ ТОЛЬКО ДЛЯ 11
+         For s = posX - 1 To posX - publicClass.Dice Step -1
+           Select Case publicClass.board[s, 0]
+             Case 11 'на пути своя фишка - хода нет
+               Return
+            
+             'здесь добавить определение чужих фишек
+              
+           End Select
+         Next
+        
+         If light Then
+           GridView1[posX - publicClass.Dice, 0].Background = Color.Yellow
+           publicClass.board[posX - publicClass.Dice, 0] = 777
+         Else
+           posMove = True  
+         Endif
+
+       Else 'если нужно повернуть
+         If playersBorders[1] = 0 Then
+           toUp = posX
+           toRight = publicClass.Dice - posX
+           xX = 0 'Запоминаем изменяемые координаты
+           yY = toRight
+           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           If light Then  
+             GridView1[0, toRight].Background = Color.Yellow
+             publicClass.board[0, toRight] = 778
+           Else 
+             posMove = True
+           Endif
+         Endif
+       End If
+
+     Case 2 'если вправо
+       If posY + publicClass.Dice <= 7 Then 'если ход умещается по горизонтали
+         xX = 0 'Запоминаем изменяемые координаты
+         yY = posY + publicClass.Dice
+         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         If light Then  
+           GridView1[0, posY + publicClass.Dice].Background = Color.Yellow
+           publicClass.board[0, posY + publicClass.Dice] = 777
+         Else
+           posMove = True
+         Endif
+       Else 'если нужно повернуть
+         If playersBorders[2] = 0 Then
+           toRight = 7 - posY
+           toDown = publicClass.Dice - toRight
+           xX = toDown 'Запоминаем изменяемые координаты
+           yY = 7
+           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           If light Then
+             GridView1[toDown, 7].Background = Color.Yellow
+             publicClass.board[toDown, 7] = 778
+           Else
+             posMove = True
+           Endif
+         End If
+       End If
+    
+     Case 3 'если вниз
+       If posX + publicClass.Dice <= 7 Then 'если ход умещается по верикали
+         xX = posX + publicClass.Dice 'Запоминаем изменяемые координаты
+         yY = 7
+         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         If light Then    
+           GridView1[posX + publicClass.Dice, 7].Background = Color.Yellow
+           publicClass.board[posX + publicClass.Dice, 7] = 777
+         Else
+           posMove = True
+         Endif
+       Else 'если нужно повернуть
+         If playersBorders[3] = 0 Then
+           toDown = 7 - posX
+           toLeft = publicClass.Dice - toDown
+           xX = 7 'Запоминаем изменяемые координаты
+           yY = 7 - toLeft
+           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           If light Then
+             GridView1[7, 7 - toLeft].Background = Color.Yellow
+             publicClass.board[7, 7 - toLeft] = 778
+           Else
+             posMove = True
+           Endif
+         End If
+       Endif
+    
+     Case 4 'если влево
+       If posY - publicClass.Dice >= 0 Then 'если ход умещается по горизонтали
+         xX = 7 'Запоминаем изменяемые координаты
+         yY = posY - publicClass.Dice
+         aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         If light Then  
+           GridView1[7, posY - publicClass.Dice].Background = Color.Yellow
+           publicClass.board[7, posY - publicClass.Dice] = 777
+         Else
+           posMove = True
+         Endif
+       Else 'если нужно повернуть
+         If playersBorders[0] = 0 And publicClass.Dice - posY < 4 Then
+           toLeft = posY
+           toUp = publicClass.Dice - toLeft
+           xX = 7 - toUp 'Запоминаем изменяемые координаты
+           yY = toUp
+           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           If light Then
+             GridView1[7 - toUp, toUp].Background = Color.Yellow
+             publicClass.board[7 - toUp, toUp] = 778
+           Else
+             posMove = True
+           Endif
+         End If  
+       End If
+    
+     Case 5 'если по диагонали в дом
+       Dim movesLeft As Short
+       movesLeft = 3 - posY
+       If publicClass.Dice > movesLeft Then
+         Return
+       Else 
+         If publicClass.board[posX - 1, posY + 1] = 0 Or publicClass.Dice = 1 Then
+           xX = posX - publicClass.Dice 'Запоминаем изменяемые координаты
+           yY = posY + publicClass.Dice
+           aA = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           If light Then
+             GridView1[posX - publicClass.Dice, posY + publicClass.Dice].Background = Color.Yellow
+             publicClass.board[posX - publicClass.Dice, posY + publicClass.Dice] = 777
+           Else
+             posMove = True
+           Endif
+         Endif
+       Endif
+  
+   End Select
+
+   If light Then
+     publicClass.FigXold = posX 'запоминаем координаты фишки до начала движения
+     publicClass.FigYold = posY 
+   End If
+  
+  Endif
+
+End
+
+
+Public Sub EndTurn()
+  Player += 10
+  Select Case publicClass.Players
+   Case 2
+     Select Case Player
+       Case 20
+         btnTest.Background = 255
+         btnTest.Text = "2"
+       Case 30
+         Player = 10
+         btnTest.Background = 65280
+         btnTest.Text = "1"
+     End Select
+   Case 3
+     Select Case Player
+       Case 20
+         btnTest.Background = 255
+         btnTest.Text = "2"
+       Case 30
+         btnTest.Background = 16711680
+         btnTest.Text = "3"
+       Case 40
+         Player = 10
+         btnTest.Background = 65280
+         btnTest.Text = "1"
+     End Select
+   Case 4
+     Select Case Player
+       Case 20
+         btnTest.Background = 255
+         btnTest.Text = "2"
+       Case 30
+         btnTest.Background = 16711680
+         btnTest.Text = "3"
+       Case 40
+         btnTest.Background = 0
+         btnTest.Text = "4"
+       Case 50
+         Player = 10
+         btnTest.Background = 65280
+         btnTest.Text = "1"
+     End Select
+ End Select
+
+  Message("Ход игрока " & Str(Player / 10), "OK")
+  moved = False
+  toMove = False
+  posMove = False
+
+End
+
+Public Sub CheckMoves()
+
+  Dim a As Short = 0
+  Dim i, j, b As Short
+  Dim x As Short[] = [3, 3, 3, 3]
+  Dim y As Short[] = [1, 1, 1, 1]
+
+  'Находим фишки игрока на поле
+    For i = 0 To 7
+      For j = 0 To 7
+        b = publicClass.board[i, j] - Player
+        If 0 < b And b < 10 Then
+          x[a] = i
+          y[a] = j
+          a += 1
+        Endif
+      Next    
+    Next
+
+'Это для отладки      
+    Print x[0], x[1], x[2], x[3]
+    Print y[0], y[1], y[2], y[3]
+
+'Проверяем возможные ходы
+i = 0
+While i < 4 And posMove = False
+    possibleMove(x[i], y[i], False)
+    Print "posMove= " & posMove 'это тоже для отладки
+    Print "toMove= " & toMove
+    i += 1
+Wend
+If posMove = False Then EndTurn
+
+
+End
+
+Public Sub btnTest_Click()
+
+  CheckMoves
+
+End

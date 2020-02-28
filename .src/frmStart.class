@@ -1,0 +1,25 @@
+' Gambas class file
+
+
+Public Sub Button1_Click()
+
+  frmStart.Hide
+  frmGame.Width = 640
+  frmGame.Height = 640
+  frmGame.Show
+  frmTemp.Show
+  publicClass.Players = SpinBox1.Value
+End
+
+Public Sub SpinBox1_Change()
+
+  publicClass.Players = SpinBox1.Value
+
+End
+
+Public Sub Form_Activate()
+
+  publicClass.Players = SpinBox1.Value
+  
+
+End
