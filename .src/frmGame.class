@@ -85,6 +85,9 @@ End
 Public Sub GridView1_Click()
 
 frmTemp.redraw 'Перерисовываем временную (отладочную) форму
+'Print zZ - (zZ Mod 10)
+Print "first=" & playersFigs[0]
+Print "second=" & playersFigs[1]
 
 If moved = True Then 'если уже двинул фишку
    Return 'Не реагировать на клики по полю
@@ -95,6 +98,7 @@ If moved = True Then 'если уже двинул фишку
   
      Case 77 'если клик на поле, подсвеченное для движения прямо
        board[xX, yY] = zZ
+       eat(zZ)
        GridView1[FigXold, FigYold].Clear 'очищаем клетку где была фишка
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
        board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold]
@@ -242,6 +246,7 @@ If moved = True Then 'если уже двинул фишку
      
      Case 78 'если клик для движения с поворотом
        board[xX, yY] = zZ
+       eat(zZ)
        GridView1[FigXold, FigYold].Clear 'очищаем клетку где была фишка
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
        board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1 'изменяем направление движения фишки
@@ -295,8 +300,8 @@ Public Sub btnDice_Click()
    toMove = True  
    Dim i, j As Byte
    Dim throw As Sound
-   DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
-   'Dice = txtTest.Text
+   'DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
+   Dice = txtTest.Text
    recolor 'перекрашиваем поле
   
    'звук броска
@@ -344,130 +349,14 @@ Public Sub btnDice_Click()
        If (Message.Question("Выставить новую фишку?", "Да", "Нет")) = 1 Then
          'выставить фишку
          moved = True
+         eat(board[aa, bb])
          GridView1[aa, bb].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1])
          playersBorders[(Player / 10) - 1] -= 1  'количество бордюров на этой стороне уменьшилось
          playersFigs[(Player / 10) - 1] += 1 'количество фигур игрока на поле увеличилось
          board[aa, bb] = Player + (Player / 10) 'на клетку выставлена фигура игрока X с направлением хода по первой линии
         
-         ''ИЗМЕНЕНИЕ КОЛИЧЕСТВА ФИШЕК В РАМКЕ СТАТУСА
-         Select Case Player
-
-           Case 10 'Для первого игрока
-             Select Case playersFigs[0] 
-               Case 0 'на поле не осталось фигур первого игрока
-                 pctOne4.Visible = True
-                 pctOne3.Visible = True
-                 pctOne2.Visible = True
-                 pctOne1.Visible = True  
-               Case 1 'на поле одна фигура первого игрока
-                 pctOne4.Visible = False
-                 pctOne3.Visible = True
-                 pctOne2.Visible = True
-                 pctOne1.Visible = True
-               Case 2
-                 pctOne4.Visible = False
-                 pctOne3.Visible = False
-                 pctOne2.Visible = True
-                 pctOne1.Visible = True
-               Case 3
-                 pctOne4.Visible = False
-                 pctOne3.Visible = False
-                 pctOne2.Visible = False
-                 pctOne1.Visible = True
-               Case 4
-                 pctOne4.Visible = False
-                 pctOne3.Visible = False
-                 pctOne2.Visible = False
-                 pctOne1.Visible = False  
-             End Select
-          
-           Case 20 'Для второго игрока
-             Select Case playersFigs[1] 
-               Case 0 'на поле не осталось фигур
-                 pctTwo4.Visible = True
-                 pctTwo3.Visible = True
-                 pctTwo2.Visible = True
-                 pctTwo1.Visible = True
-               Case 1 'на поле одна фигура
-                 pctTwo4.Visible = False
-                 pctTwo3.Visible = True
-                 pctTwo2.Visible = True
-                 pctTwo1.Visible = True
-               Case 2
-                 pctTwo4.Visible = False
-                 pctTwo3.Visible = False
-                 pctTwo2.Visible = True
-                 pctTwo1.Visible = True
-               Case 3
-                 pctTwo4.Visible = False
-                 pctTwo3.Visible = False
-                 pctTwo2.Visible = False
-                 pctTwo1.Visible = True
-               Case 4
-                 pctTwo4.Visible = False
-                 pctTwo3.Visible = False
-                 pctTwo2.Visible = False
-                 pctTwo1.Visible = False  
-             End Select
-          
-           Case 30 'Для третьего игрока
-             Select Case playersFigs[2] 
-               Case 0 'на поле не осталось фигур
-                 pctThree4.Visible = True
-                 pctThree3.Visible = True
-                 pctThree2.Visible = True
-                 pctThree1.Visible = True  
-               Case 1 'на поле одна фигура
-                 pctThree4.Visible = False
-                 pctThree3.Visible = True
-                 pctThree2.Visible = True
-                 pctThree1.Visible = True
-               Case 2
-                 pctThree4.Visible = False
-                 pctThree3.Visible = False
-                 pctThree2.Visible = True
-                 pctThree1.Visible = True
-               Case 3
-                 pctThree4.Visible = False
-                 pctThree3.Visible = False
-                 pctThree2.Visible = False
-                 pctThree1.Visible = True
-               Case 4
-                 pctThree4.Visible = False
-                 pctThree3.Visible = False
-                 pctThree2.Visible = False
-                 pctThree1.Visible = False  
-             End Select
-            
-           Case 40 'Для четвертого игрока
-             Select Case playersFigs[3] 
-               Case 0 'на поле не осталось фигур
-                 pctFour4.Visible = True
-                 pctFour3.Visible = True
-                 pctFour2.Visible = True
-                 pctFour1.Visible = True  
-               Case 1 'на поле одна фигура
-                 pctFour4.Visible = False
-                 pctFour3.Visible = True
-                 pctFour2.Visible = True
-                 pctFour1.Visible = True
-               Case 2
-                 pctFour4.Visible = False
-                 pctFour3.Visible = False
-                 pctFour2.Visible = True
-                 pctFour1.Visible = True
-               Case 3
-                 pctFour4.Visible = False
-                 pctFour3.Visible = False
-                 pctFour2.Visible = False
-                 pctFour1.Visible = True
-               Case 4
-                 pctFour4.Visible = False
-                 pctFour3.Visible = False
-                 pctFour2.Visible = False
-                 pctFour1.Visible = False  
-           End Select    
-         End Select
+         ''ТУТ ПЕРЕРИСОВЫВАЛИСЬ ФИШКИ В СТАТУСЕ
+         statusUpdate
        Endif 'это про выставить ли новую фишку
      Endif 'это про если есть фигуры в запасе и поле дома не занято
    End If
@@ -866,3 +755,139 @@ Public Sub moveCorrection()
        End Select
   
 End
+
+Public Sub eat(q As Byte)
+  
+  Select Case q - (q Mod 10) 'смотрим чья фишка в конце движения
+    Case 10 'если фишка первого игрока
+      playersFigs[0] -= 1
+    Case 20
+      playersFigs[1] -= 1
+    Case 30
+      playersFigs[2] -= 1
+    Case 40
+      playersFigs[3] -= 1
+  End Select
+
+  statusUpdate
+  
+End
+
+Public Sub statusUpdate() 'ИЗМЕНЕНИЕ КОЛИЧЕСТВА ФИШЕК В РАМКЕ СТАТУСА
+
+   Select Case playersFigs[0] 
+     Case 0 'на поле не осталось фигур первого игрока
+       pctOne4.Visible = True
+       pctOne3.Visible = True
+       pctOne2.Visible = True
+       pctOne1.Visible = True  
+     Case 1 'на поле одна фигура первого игрока
+       pctOne4.Visible = False
+       pctOne3.Visible = True
+       pctOne2.Visible = True
+       pctOne1.Visible = True
+     Case 2
+       pctOne4.Visible = False
+       pctOne3.Visible = False
+       pctOne2.Visible = True
+       pctOne1.Visible = True
+     Case 3
+       pctOne4.Visible = False
+       pctOne3.Visible = False
+       pctOne2.Visible = False
+       pctOne1.Visible = True
+     Case 4
+       pctOne4.Visible = False
+       pctOne3.Visible = False
+       pctOne2.Visible = False
+       pctOne1.Visible = False  
+   End Select
+  
+   Select Case playersFigs[1] 
+     Case 0 'на поле не осталось фигур
+       pctTwo4.Visible = True
+       pctTwo3.Visible = True
+       pctTwo2.Visible = True
+       pctTwo1.Visible = True
+     Case 1 'на поле одна фигура
+       pctTwo4.Visible = False
+       pctTwo3.Visible = True
+       pctTwo2.Visible = True
+       pctTwo1.Visible = True
+     Case 2
+       pctTwo4.Visible = False
+       pctTwo3.Visible = False
+       pctTwo2.Visible = True
+       pctTwo1.Visible = True
+     Case 3
+       pctTwo4.Visible = False
+       pctTwo3.Visible = False
+       pctTwo2.Visible = False
+       pctTwo1.Visible = True
+     Case 4
+       pctTwo4.Visible = False
+       pctTwo3.Visible = False
+       pctTwo2.Visible = False
+       pctTwo1.Visible = False  
+   End Select
+  
+   Select Case playersFigs[2] 
+     Case 0 'на поле не осталось фигур
+       pctThree4.Visible = True
+       pctThree3.Visible = True
+       pctThree2.Visible = True
+       pctThree1.Visible = True  
+     Case 1 'на поле одна фигура
+       pctThree4.Visible = False
+       pctThree3.Visible = True
+       pctThree2.Visible = True
+       pctThree1.Visible = True
+     Case 2
+       pctThree4.Visible = False
+       pctThree3.Visible = False
+       pctThree2.Visible = True
+       pctThree1.Visible = True
+     Case 3
+       pctThree4.Visible = False
+       pctThree3.Visible = False
+       pctThree2.Visible = False
+       pctThree1.Visible = True
+     Case 4
+       pctThree4.Visible = False
+       pctThree3.Visible = False
+       pctThree2.Visible = False
+       pctThree1.Visible = False  
+   End Select
+  
+   Select Case playersFigs[3] 
+     Case 0 'на поле не осталось фигур
+       pctFour4.Visible = True
+       pctFour3.Visible = True
+       pctFour2.Visible = True
+       pctFour1.Visible = True  
+     Case 1 'на поле одна фигура
+       pctFour4.Visible = False
+       pctFour3.Visible = True
+       pctFour2.Visible = True
+       pctFour1.Visible = True
+     Case 2
+       pctFour4.Visible = False
+       pctFour3.Visible = False
+       pctFour2.Visible = True
+       pctFour1.Visible = True
+     Case 3
+       pctFour4.Visible = False
+       pctFour3.Visible = False
+       pctFour2.Visible = False
+       pctFour1.Visible = True
+     Case 4
+       pctFour4.Visible = False
+       pctFour3.Visible = False
+       pctFour2.Visible = False
+       pctFour1.Visible = False  
+   End Select    
+  
+  
+End
+
+
