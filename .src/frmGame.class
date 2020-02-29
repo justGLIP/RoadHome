@@ -96,27 +96,47 @@ If moved = True Then 'если уже двинул фишку
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
        publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold]
 
-       Select Case GridView1.Row
-         Case 0
+       Select Case GridView1.Row 'изменение направления движения фишки
+         Case 0 
            Select Case GridView1.Column
-             Case 0
-               publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+             Case 0 'меняем с вверх на вправо
+               'If Player = 20 Then
+                ' publicClass.board[GridView1.Row, GridView1.Column] = 25 'у второго игрока направление меняется на движение в дом
+               'Else
+                 publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               'End If
                playersBorders[1] -= 1
-             Case 7
-               publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               moveCorrection
+             Case 7 'меняем с вправо на вниз
+               'If Player = 30 Then
+                ' publicClass.board[GridView1.Row, GridView1.Column] = 35 'у третьего игрока направление меняется на движение в дом
+               'Else
+                 publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               'End If
                playersBorders[2] -= 1
+               moveCorrection
            End Select
          Case 7
            Select Case GridView1.Column
-             Case 0
-               If publicClass.board[publicClass.FigXold, publicClass.FigYold] = 14 Then publicClass.board[7, 0] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+             Case 0 'меняем с влево на вверх
+               'If Player = 10 Then
+                ' publicClass.board[GridView1.Row, GridView1.Column] = 15 'у первого игрока направление меняется на движение в дом
+               'Else
+                 publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               'End If
                playersBorders[0] -= 1
-             Case 7
-               publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               moveCorrection
+             Case 7 'меняем с вниз на влево
+               'If Player = 40 Then
+                ' publicClass.board[GridView1.Row, GridView1.Column] = 45 'у четвертого игрока направление меняется на движение в дом
+               'Else
+                 publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+               'End If
                playersBorders[3] -= 1
+               moveCorrection
            End Select
        End Select
-       publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0 'обнуляем старое поле фишки после хода прямо
+       
        xX = 5
        yY = 1
        zZ = 0
@@ -124,102 +144,108 @@ If moved = True Then 'если уже двинул фишку
        If publicClass.Dice <> 6 Then toMove = False
       
        Dim direction As Short
-       direction = publicClass.board[publicClass.FigXold, publicClass.FigYold] Mod 50
-       If direction <> 5 Then 'если фишка движется не в дом
-         If publicClass.FigXold = 7 And publicClass.FigYold = 0 Then 'заполняем первые границы (бордеры)
-           publicClass.board[7, 0] = 888 'запоминаем, что на угловой клетке теперь бордюр
-           Select Case playersBorders[0] 
-             Case 3
-               GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[4, 3].Clear
-               publicClass.board[4, 3] = 0
-             Case 2
-               GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[5, 2].Clear
-               publicClass.board[5, 2] = 0
-             Case 1
+       direction = publicClass.board[publicClass.FigXold, publicClass.FigYold]
+       If publicClass.FigXold = 7 And publicClass.FigYold = 0 Then 'заполняем первые границы (бордеры)
+         publicClass.board[7, 0] = 888 'запоминаем, что на угловой клетке теперь бордюр
+         Select Case playersBorders[0] 
+           Case 3
+             GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[4, 3].Clear
+             publicClass.board[4, 3] = 0
+           Case 2
+             GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[5, 2].Clear
+             publicClass.board[5, 2] = 0
+           Case 1
+             If Not (direction = 15) Then
                GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
                GridView1[6, 1].Clear
                publicClass.board[6, 1] = 0
-             Case 0
-               publicClass.board[7, 0] = 0
-           End Select
-         Endif
-         
-         If publicClass.FigXold = 0 And publicClass.FigYold = 0 Then 'заполняем вторые границы (бордеры)
-           publicClass.board[0, 0] = 888 'запоминаем, что на угловой клетке теперь бордюр
-           Select Case playersBorders[1] 
-             Case 3
-               GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[3, 3].Clear
-               publicClass.board[3, 3] = 0
-             Case 2
-               GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[2, 2].Clear
-               publicClass.board[2, 2] = 0
-             Case 1
+             End If
+          
+           Case 0
+             publicClass.board[7, 0] = 0
+         End Select
+       Endif
+      
+       If publicClass.FigXold = 0 And publicClass.FigYold = 0 Then 'заполняем вторые границы (бордеры)
+         publicClass.board[0, 0] = 888 'запоминаем, что на угловой клетке теперь бордюр
+         Select Case playersBorders[1] 
+           Case 3
+             GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[3, 3].Clear
+             publicClass.board[3, 3] = 0
+           Case 2
+             GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[2, 2].Clear
+             publicClass.board[2, 2] = 0
+           Case 1
+             If Not (direction = 25) Then
                GridView1[0, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
                GridView1[1, 1].Clear
                publicClass.board[1, 1] = 0
-             Case 0
-               publicClass.board[0, 0] = 0
-           End Select  
-         Endif
-         
-         If publicClass.FigXold = 0 And publicClass.FigYold = 7 Then 'заполняем третьи границы (бордеры)
-           publicClass.board[0, 7] = 888 'запоминаем, что на угловой клетке теперь бордюр
-           Select Case playersBorders[2] 
-             Case 3
-               GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[3, 4].Clear
-               publicClass.board[3, 4] = 0
-             Case 2
-               GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[2, 5].Clear
-               publicClass.board[2, 5] = 0
-             Case 1
+             End If
+           Case 0
+             publicClass.board[0, 0] = 0
+         End Select  
+       Endif
+      
+       If publicClass.FigXold = 0 And publicClass.FigYold = 7 Then 'заполняем третьи границы (бордеры)
+         publicClass.board[0, 7] = 888 'запоминаем, что на угловой клетке теперь бордюр
+         Select Case playersBorders[2] 
+           Case 3
+             GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[3, 4].Clear
+             publicClass.board[3, 4] = 0
+           Case 2
+             GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[2, 5].Clear
+             publicClass.board[2, 5] = 0
+           Case 1
+             If Not (direction = 35) Then
                GridView1[0, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
                GridView1[1, 6].Clear
                publicClass.board[1, 6] = 0
-             Case 0
-               publicClass.board[0, 7] = 0
-           End Select  
-         Endif
-         
-         If publicClass.FigXold = 7 And publicClass.FigYold = 7 Then 'заполняем четвертые границы (бордеры)
-           publicClass.board[7, 7] = 888 'запоминаем, что на угловой клетке теперь бордюр
-           Select Case playersBorders[3] 'publicClass.pFourBorders
-             Case 3
-               GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[4, 4].Clear
-               publicClass.board[4, 4] = 0
-             Case 2
-               GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
-               GridView1[5, 5].Clear
-               publicClass.board[5, 5] = 0
-             Case 1
+             End If
+           Case 0
+             publicClass.board[0, 7] = 0
+         End Select  
+       Endif
+    
+       If publicClass.FigXold = 7 And publicClass.FigYold = 7 Then 'заполняем четвертые границы (бордеры)
+         publicClass.board[7, 7] = 888 'запоминаем, что на угловой клетке теперь бордюр
+         Select Case playersBorders[3] 'publicClass.pFourBorders
+           Case 3
+             GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[4, 4].Clear
+             publicClass.board[4, 4] = 0
+           Case 2
+             GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
+             GridView1[5, 5].Clear
+             publicClass.board[5, 5] = 0
+           Case 1
+             If Not (direction = 45) Then
                GridView1[7, 7].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
                GridView1[6, 6].Clear
                publicClass.board[6, 6] = 0
-             Case 0
-               publicClass.board[7, 7] = 0
-           End Select  
-         Endif
-        
-       Else 'Если фишка движется в дом
-          '' ТУТ НАДО ЧТО-ТО СДЕЛАТЬ, ЕСЛИ ХОТИМ, ЧТОБЫ ЗА ДВИЖУЩЕЙСЯ В ДОМ ФИШКОЙ ЗАКРЫВАЛСЯ БОРДЮР 
+             End If
+           Case 0
+             publicClass.board[7, 7] = 0
+         End Select  
        Endif
-      
-       'Подвинул фишку прямо - дальше:
-       ''ВОЗМОЖНО ТУТ НАДО ВСТАВИТЬ ПРОВЕРКУ НА ШЕСТЕРКУ
-       recolor 'убираем желтый цвет поля
-       If publicClass.Dice <> 6 Then EndTurn 'Заканчиваем ход
+    
+     'Подвинул фишку прямо - дальше:
+     publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0 'обнуляем старое поле фишки после хода прямо
+     recolor 'убираем желтый цвет поля
+     If publicClass.Dice <> 6 Then EndTurn 'Заканчиваем ход
      
      Case 778 'если клик для движения с поворотом
        publicClass.board[xX, yY] = zZ
        GridView1[publicClass.FigXold, publicClass.FigYold].Clear 'очищаем клетку где была фишка
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
-       publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1
+       publicClass.board[GridView1.Row, GridView1.Column] = publicClass.board[publicClass.FigXold, publicClass.FigYold] + 1 'изменяем направление движения фишки
+       moveCorrection
+       
        publicClass.board[publicClass.FigXold, publicClass.FigYold] = 0
        moved = True
        If publicClass.Dice <> 6 Then toMove = False
@@ -478,6 +504,8 @@ End
 
 Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
 
+  Dim movesLeft As Short
+  
   ''ПОДСВЕЧИВАЕМ ВОЗМОЖНЫЙ ХОД
   Dim s, z As Short
   posMove = False
@@ -494,12 +522,12 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
          yY = 0
          zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
         
-         '' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ - НЕ ДОДЕЛАНО ДЛЯ ЧУЖИХ ФИШЕК И ДВИЖЕНИЯ НЕ ВВЕРХ
-         For s = posX - 1 To posX - publicClass.Dice Step -1
-           z = publicClass.board[s, 0] - Player
-           If z > 0 And z < 10 Then Return 'на пути своя фишка - хода нет
+         ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+         For s = posX - 1 To posX - (publicClass.Dice - 1) Step -1
+           If publicClass.board[s, 0] <> 0 Then Return 'по дороге занято - хода нет
          Next
-        
+         If publicClass.board[posX - publicClass.Dice, 0] - Player > 0 And publicClass.board[posX - publicClass.Dice, 0] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+         
          If light Then
            GridView1[posX - publicClass.Dice, 0].Background = Color.Yellow
            publicClass.board[posX - publicClass.Dice, 0] = 777
@@ -514,6 +542,16 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            xX = 0 'Запоминаем изменяемые координаты
            yY = toRight
            zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           
+           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+           For s = posX - 1 To 0 Step -1
+             If publicClass.board[s, 0] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           For s = 1 To toRight - 1
+             If publicClass.board[0, s] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           If publicClass.board[0, toRight] - Player > 0 And publicClass.board[0, toRight] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+           
            If light Then  
              GridView1[0, toRight].Background = Color.Yellow
              publicClass.board[0, toRight] = 778
@@ -528,6 +566,13 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
          xX = 0 'Запоминаем изменяемые координаты
          yY = posY + publicClass.Dice
          zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         
+         ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+         For s = posY + 1 To yY - 1
+           If publicClass.board[0, s] <> 0 Then Return 'по дороге занято - хода нет
+         Next
+         If publicClass.board[0, yY] - Player > 0 And publicClass.board[0, yY] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+         
          If light Then  
            GridView1[0, posY + publicClass.Dice].Background = Color.Yellow
            publicClass.board[0, posY + publicClass.Dice] = 777
@@ -541,6 +586,16 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            xX = toDown 'Запоминаем изменяемые координаты
            yY = 7
            zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           
+           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+           For s = posY + 1 To 7
+             If publicClass.board[0, s] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           For s = 1 To toDown - 1
+             If publicClass.board[s, 7] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           If publicClass.board[toDown, 7] - Player > 0 And publicClass.board[toDown, 7] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+           
            If light Then
              GridView1[toDown, 7].Background = Color.Yellow
              publicClass.board[toDown, 7] = 778
@@ -555,6 +610,13 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
          xX = posX + publicClass.Dice 'Запоминаем изменяемые координаты
          yY = 7
          zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         
+         ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+         For s = posX + 1 To xX - 1
+           If publicClass.board[s, 7] <> 0 Then Return 'по дороге занято - хода нет
+         Next
+         If publicClass.board[xX, 7] - Player > 0 And publicClass.board[xX, 7] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+         
          If light Then    
            GridView1[posX + publicClass.Dice, 7].Background = Color.Yellow
            publicClass.board[posX + publicClass.Dice, 7] = 777
@@ -568,6 +630,16 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            xX = 7 'Запоминаем изменяемые координаты
            yY = 7 - toLeft
            zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           
+           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+           For s = posX + 1 To 7
+             If publicClass.board[s, 7] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           For s = 6 To yY - 1 Step -1
+             If publicClass.board[7, s] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           If publicClass.board[7, yY] - Player > 0 And publicClass.board[7, yY] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+           
            If light Then
              GridView1[7, 7 - toLeft].Background = Color.Yellow
              publicClass.board[7, 7 - toLeft] = 778
@@ -582,12 +654,20 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
          xX = 7 'Запоминаем изменяемые координаты
          yY = posY - publicClass.Dice
          zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+         
+         ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+         For s = posY - 1 To yY + 1 Step -1
+           If publicClass.board[7, s] <> 0 Then Return 'по дороге занято - хода нет
+         Next
+         If publicClass.board[7, yY] - Player > 0 And publicClass.board[7, yY] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+         
          If light Then  
            GridView1[7, posY - publicClass.Dice].Background = Color.Yellow
            publicClass.board[7, posY - publicClass.Dice] = 777
          Else
            posMove = True
          Endif
+         
        Else 'если нужно повернуть
          If playersBorders[0] = 0 And publicClass.Dice - posY < 4 Then
            toLeft = posY
@@ -595,32 +675,76 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            xX = 7 - toUp 'Запоминаем изменяемые координаты
            yY = toUp
            zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
-           If light Then
-             GridView1[7 - toUp, toUp].Background = Color.Yellow
-             publicClass.board[7 - toUp, toUp] = 778
-           Else
-             posMove = True
-           Endif
+           
+           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+           For s = posY - 1 To 0
+             If publicClass.board[7, s] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           If Player = 10 Then ''Если игрок №1 - значит он поворачивает в дом
+             movesLeft = publicClass.Dice - posY
+             If movesLeft > 4 Then Return
+             For s = 6 To xX + 1 Step -1
+               For movesLeft = 1 To yY - 1
+                 If publicClass.board[s, movesLeft] <> 0 Then Return 'по дороге занято - хода нет
+               Next
+             Next
+             If zZ - Player > 0 And zZ - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+             
+             If light Then 
+               GridView1[7 - toUp, toUp].Background = Color.Yellow
+               publicClass.board[7 - toUp, toUp] = 778
+             Else
+               posMove = True
+             Endif
+             
+           Else ''Не 1й игрок - значит поворачивает вверх
+             For s = 6 To xX + 1 Step -1
+               If publicClass.board[s, 0] <> 0 Then Return 'по дороге занято - хода нет
+             Next
+             If publicClass.board[xX, 0] - Player > 0 And publicClass.board[xX, 0] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+             
+             If light Then
+               GridView1[xX, 0].Background = Color.Yellow
+               publicClass.board[xX, 0] = 778
+             Else
+               posMove = True
+             Endif
+           End If
+           
+           'If light Then ''ПОДСВЕЧИВАЕМ ПРАВИЛЬНО ТОЛЬКО ДЛЯ ПЕРВОГО ИГРОКА
+           '  GridView1[7 - toUp, toUp].Background = Color.Yellow
+           '  publicClass.board[7 - toUp, toUp] = 778
+           'Else
+           '  posMove = True
+           'Endif
          End If  
        End If
     
-     Case 5 'если по диагонали в дом
-       Dim movesLeft As Short
+     Case 5 '' если по диагонали в дом ТОЛЬКО ДЛЯ ПЕРВОГО ИГРОКА
        movesLeft = 3 - posY
        If publicClass.Dice > movesLeft Then
          Return
        Else 
-         If publicClass.board[posX - 1, posY + 1] = 0 Or publicClass.Dice = 1 Then
+         'If publicClass.board[posX - 1, posY + 1] = 0 Or (publicClass.board[posX - 1, posY + 1] = 888 And publicClass.Dice = 1) Then
            xX = posX - publicClass.Dice 'Запоминаем изменяемые координаты
            yY = posY + publicClass.Dice
            zZ = publicClass.board[xX, yY] 'Запоминаем изменяемое значение
+           
+           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+           For s = posX - 1 To xX + 1 Step -1
+             For movesLeft = posY + 1 To yY - 1
+               If publicClass.board[s, movesLeft] <> 0 Then Return 'по дороге занято - хода нет
+             Next
+           Next
+           If zZ - Player > 0 And zZ - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+           
            If light Then
              GridView1[posX - publicClass.Dice, posY + publicClass.Dice].Background = Color.Yellow
              publicClass.board[posX - publicClass.Dice, posY + publicClass.Dice] = 777
            Else
              posMove = True
            Endif
-         Endif
+         'Endif
        Endif
   
    End Select
@@ -705,16 +829,10 @@ Public Sub CheckMoves()
       Next    
     Next
 
-'Это для отладки      
-    Print x[0], x[1], x[2], x[3]
-    Print y[0], y[1], y[2], y[3]
-
 'Проверяем возможные ходы
 i = 0
 While i < 4 And posMove = False
     possibleMove(x[i], y[i], False)
-    Print "posMove= " & posMove 'это тоже для отладки
-    Print "toMove= " & toMove
     i += 1
 Wend
 If posMove = False Then EndTurn
@@ -724,6 +842,26 @@ End
 
 Public Sub btnTest_Click()
 
-  CheckMoves
 
+  EndTurn
+
+End
+
+Public Sub moveCorrection()
+  
+  Select Case publicClass.board[GridView1.Row, GridView1.Column] 'исправления для изменений
+         Case 22
+           publicClass.board[GridView1.Row, GridView1.Column] = 25
+         Case 25
+           publicClass.board[GridView1.Row, GridView1.Column] = 21
+         Case 33
+           publicClass.board[GridView1.Row, GridView1.Column] = 35
+         Case 35
+           publicClass.board[GridView1.Row, GridView1.Column] = 31
+         Case 44
+           publicClass.board[GridView1.Row, GridView1.Column] = 45
+         Case 45
+           publicClass.board[GridView1.Row, GridView1.Column] = 41
+       End Select
+  
 End
