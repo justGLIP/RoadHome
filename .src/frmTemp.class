@@ -13,7 +13,7 @@ Public Sub redraw()
   
     For i = 0 To 7
       For j = 0 To 7
-          GridView1[i, j].Text = publicClass.board[i, j]
+          GridView1[i, j].Text = frmGame.board[i, j]
       Next
     Next
 

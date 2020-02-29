@@ -1,5 +1,6 @@
 ' Gambas class file
 
+Static Public Players As Byte  'количество игроков
 
 Public Sub Button1_Click()
 
@@ -8,18 +9,18 @@ Public Sub Button1_Click()
   frmGame.Height = 640
   frmGame.Show
   frmTemp.Show
-  publicClass.Players = SpinBox1.Value
+  Players = SpinBox1.Value
 End
 
 Public Sub SpinBox1_Change()
 
-  publicClass.Players = SpinBox1.Value
+  Players = SpinBox1.Value
 
 End
 
 Public Sub Form_Activate()
 
-  publicClass.Players = SpinBox1.Value
+  Players = SpinBox1.Value
   
 
 End
