@@ -1,7 +1,7 @@
 ' Gambas class file
 
 
-Public DiceImg As String[] = ["dieRed1.png", "dieRed2.png", "dieRed3.png", "dieRed4.png", "dieRed5.png", "dieRed6.png"]
+Public DiceImg As String[] = ["Green", "Blue", "Red", "Black"]
 Public ChipImg As String[] = ["chipGreenWhite_border.png", "chipBlueWhite_border.png", "chipRedWhite_border.png", "chipBlackWhite_border.png"]
 Public moved As Boolean = True 'подвинул фишку
 Public toUp As Byte
@@ -40,7 +40,7 @@ Dim j As Byte
      .y = 540
      .Width = 80
      .height = 80
-     .Picture = Picture.Load("Resources/Images/dieRed1.png")
+     .Picture = Picture.Load("Resources/Images/dieGreen1.png")
    End With
    
    With Me
@@ -312,16 +312,12 @@ Public Sub btnDice_Click()
   
    'анимация броска
    For i = 0 To 10
-     j = Int(Rnd(1, 7)) - 1
-     btnDice.Picture = Picture.Load("Resources/Images/" & DiceImg[j])
+     j = Int(Rnd(1, 7))
+     btnDice.Picture = Picture.Load("Resources/Images/" & "die" & Str(DiceImg[(Player / 10) - 1]) & Str(j) & ".png")
      Wait 0.1
    Next
-   btnDice.Picture = Picture.Load("Resources/Images/" & DiceImg[Dice - 1])
+   btnDice.Picture = Picture.Load("Resources/Images/" & "die" & Str(DiceImg[(Player / 10) - 1]) & Str(Dice) & ".png")
   
-   'If Not (Dice = 6) And playersFigs[(Player / 10) - 1] = 0 Then ' если фишек на поле нет и не выпала шестерка, то конец хода
-   '  EndTurn
-   'Endif
-   
    ''ЕСЛИ ВЫПАЛА ШЕСТЕРКА
    Dim aa, bb As Byte
    If Dice = 6 Then
@@ -694,6 +690,7 @@ Public Sub EndTurn()
  End Select
 
   Message("Ход игрока " & Str(Player / 10), "OK")
+  btnDice.Picture = Picture.Load("Resources/Images/" & "die" & Str(DiceImg[(Player / 10) - 1]) & Str(Dice) & ".png")
   moved = False
   toMove = False
   posMove = False

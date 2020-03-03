@@ -52,6 +52,7 @@
   { btnDice Button
     MoveScaled(100,77,11.4286,11.4286)
     NoTabFocus = True
+    Picture = Picture["Resources/Images/dieGreen1.png"]
   }
   { Frame1 Frame
     MoveScaled(93,2,26,73)
