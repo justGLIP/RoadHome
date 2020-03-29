@@ -3,7 +3,22 @@
 { Form Form
   MoveScaled(0,0,64,64)
   { !GridView1 GridView
-    MoveScaled(0,1,62,62)
+    MoveScaled(0,1,62,29)
     #Public = True
+  }
+  { lblPlayer Label
+    MoveScaled(2,48,24,4)
+  }
+  { lblBorders1 Label
+    MoveScaled(2,52,24,4)
+  }
+  { lblBorders2 Label
+    MoveScaled(2,55,24,4)
+  }
+  { lblBorders3 Label
+    MoveScaled(22,52,24,4)
+  }
+  { lblBorders4 Label
+    MoveScaled(22,55,24,4)
   }
 }

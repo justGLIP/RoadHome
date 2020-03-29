@@ -16,6 +16,9 @@ Public Sub redraw()
           GridView1[i, j].Text = frmGame.board[i, j]
       Next
     Next
-
-  
+lblPlayer.Text = "Player= " & frmGame.Player
+lblBorders1.Text = "Borders 1 pl= " & frmGame.playersBorders[0]
+lblBorders2.Text = "Borders 2 pl= " & frmGame.playersBorders[1]
+lblBorders3.Text = "Borders 3 pl= " & frmGame.playersBorders[2]
+lblBorders4.Text = "Borders 4 pl= " & frmGame.playersBorders[3]
 End
