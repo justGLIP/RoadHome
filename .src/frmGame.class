@@ -4,13 +4,13 @@
 Public DiceImg As String[] = ["Green", "Blue", "Red", "Black"]
 Public ChipImg As String[] = ["chipGreenWhite_border.png", "chipBlueWhite_border.png", "chipRedWhite_border.png", "chipBlackWhite_border.png"]
 Public moved As Boolean = True 'подвинул фишку
-Public toUp As Byte
-Public toRight As Byte
-Public toDown As Byte
-Public toLeft As Byte
-Public xX As Byte = 5
-Public yY As Byte = 1
-Public zZ As Byte = 0
+Public toUp As Byte 'нужно при движении с поворотом - шагов вверх
+Public toRight As Byte 'нужно при движении с поворотом - шагов вправо
+Public toDown As Byte 'нужно при движении с поворотом - шагов вниз
+Public toLeft As Byte 'нужно при движении с поворотом - шагов влево
+Public xX As Byte = 5 'для запоминания координат Х изменяемой клетки (куда может пойти фишка)
+Public yY As Byte = 1 'для запоминания координат У изменяемой клетки (куда может пойти фишка)
+Public zZ As Byte = 0 'для запоминания значения изменяемой клетки (куда может пойти фишка)
 Public Player As Byte = 10
 Public playersFigs As Byte[] = [0, 0, 0, 0] 'Количество фишек на доске у игрока [X]
 Public playersBorders As Short[] = [4, 4, 4, 4] 'Количество бордюров на стороне игрока[X]
@@ -22,7 +22,8 @@ Public board[8, 8] As Byte ' массив доски в формате xy, гд�
 Public FigXold As Byte
 Public FigYold As Byte 'координаты фишки до начала движения
 Public Dice As Byte   'число выпавшее на кубике
-Public Diagonal As Boolean
+Public Diagonal As Boolean 'если фишка движется прямо по диагонали в дом - true
+Public win As Boolean 'победа
 
 Public Sub Form_Show()
 Dim j As Byte
@@ -35,6 +36,7 @@ Dim j As Byte
        pctBox4.Visible = True
    End Select
 
+win = False
 'Изменяем размер формы под поле 8х8
    With btnDice
      .x = 700
@@ -100,28 +102,28 @@ If moved = True Then 'если уже двинул фишку
        GridView1[FigXold, FigYold].Clear 'очищаем клетку где была фишка
        GridView1[GridView1.Row, GridView1.Column].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1]) 'рисуем ее на новом месте
        board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold]
-       If Diagonal = True And playersBorders[(Player / 10) - 1] <> 0 Then playersBorders[(Player / 10) - 1] -= 1
+       If Diagonal = True And playersBorders[(Player / 10) - 1] > 0 Then playersBorders[(Player / 10) - 1] -= 1
        Select Case GridView1.Row 'изменение направления движения фишки
          Case 0 
            Select Case GridView1.Column
              Case 0 'меняем с вверх на вправо
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               playersBorders[1] -= 1
+               If playersBorders[1] > 0 Then playersBorders[1] -= 1
                moveCorrection
              Case 7 'меняем с вправо на вниз
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               playersBorders[2] -= 1
+               If playersBorders[2] > 0 Then playersBorders[2] -= 1
                moveCorrection
            End Select
          Case 7
            Select Case GridView1.Column
              Case 0 'меняем с влево на вверх
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               playersBorders[0] -= 1
+               If playersBorders[0] > 0 Then playersBorders[0] -= 1
                moveCorrection
              Case 7 'меняем с вниз на влево
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               playersBorders[3] -= 1
+               If playersBorders[3] > 0 Then playersBorders[3] -= 1
                moveCorrection
            End Select
        End Select
@@ -145,7 +147,7 @@ If moved = True Then 'если уже двинул фишку
              GridView1[5, 2].Clear
              board[5, 2] = 0
            Case 1
-             If Not (board[FigXold, FigYold] = 15) Then
+             If Not Diagonal Then
                GridView1[7, 0].Picture = Picture.Load("Resources/Images/pieceWhite_single09.png")
                If board[5, 2] <> 15 Then
                  GridView1[5, 2].Clear
@@ -249,7 +251,7 @@ If moved = True Then 'если уже двинул фишку
      'Подвинул фишку прямо - дальше:
      If Not ((FigXold = 7 And FigYold = 0) Or (FigXold = 0 And FigYold = 0) Or (FigXold = 0 And FigYold = 7) Or (FigXold = 7 And FigYold = 7)) Then board[FigXold, FigYold] = 0 'обнуляем старое поле фишки после хода прямо
      recolor 'убираем желтый цвет поля
-     If Dice <> 6 Then EndTurn 'Заканчиваем ход
+     If Dice <> 6 Then EndTurn Else CheckWin 'Заканчиваем ход
      
      Case 78 'если клик для движения с поворотом
        board[xX, yY] = zZ
@@ -307,8 +309,8 @@ Public Sub btnDice_Click()
    toMove = True  
    Dim i, j As Byte
    Dim throw As Sound
-   'DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
-   Dice = txtTest.Text
+   DiceThrow 'бросаем кубик (выбираем случайное число от 1 до 6)
+   'Dice = txtTest.Text
    recolor 'перекрашиваем поле
   
    'звук броска
@@ -354,11 +356,11 @@ Public Sub btnDice_Click()
          moved = True
          eat(board[aa, bb])
          GridView1[aa, bb].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1])
-         playersBorders[(Player / 10) - 1] -= 1  'количество бордюров на этой стороне уменьшилось
+         If playersBorders[(Player / 10) - 1] > 0 And board[aa, bb] = 88 Then playersBorders[(Player / 10) - 1] -= 1  'количество бордюров на этой стороне уменьшилось
          playersFigs[(Player / 10) - 1] += 1 'количество фигур игрока на поле увеличилось
          board[aa, bb] = Player + (Player / 10) 'на клетку выставлена фигура игрока X с направлением хода по первой линии
         
-         ''ТУТ ПЕРЕРИСОВЫВАЛИСЬ ФИШКИ В СТАТУСЕ
+         ''ТУТ ПЕРЕРИСОВЫВАЮТСЯ ФИШКИ В СТАТУСЕ
          statusUpdate
        Endif 'это про выставить ли новую фишку
      Endif 'это про если есть фигуры в запасе и поле дома не занято
@@ -429,8 +431,6 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            posMove = True  
          Endif
 
-'' ТУТ НУЖНО ВСТАВИТЬ ПРОВЕРКУ НЕ 2Й ЛИ ЭТО ИГРОК ПОВОРАЧИВАЮЩИЙ В ДОМ (И В ДРУГИХ ТАКИХ МЕСТАХ АНАЛОГИЧНО)
-
        Else 'если нужно повернуть
          
          If Player = 20 Then ''Второй игрок - поворот в дом
@@ -450,7 +450,6 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
                If board[s, s] <> 0 Then Return 'по дороге занято - хода нет
              Next
              If board[toRight, toRight] = 25 Then Return 'в конце пути своя фишка - хода нет
-             'If board[0, toRight] - Player > 0 And board[0, toRight] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
            
              If light Then  
                GridView1[toRight, toRight].Background = Color.Yellow
@@ -525,7 +524,6 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
                If board[s, 7 - s] <> 0 Then Return 'по дороге занято - хода нет
              Next
              If board[xX, yY] = 35 Then Return 'в конце пути своя фишка - хода нет
-             'If board[0, toRight] - Player > 0 And board[0, toRight] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
            
              If light Then  
                GridView1[xX, yY].Background = Color.Yellow
@@ -600,7 +598,6 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
                If board[s, s] <> 0 Then Return 'по дороге занято - хода нет
              Next
              If board[xX, yY] = 45 Then Return 'в конце пути своя фишка - хода нет
-             'If board[0, toRight] - Player > 0 And board[0, toRight] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
            
              If light Then  
                GridView1[xX, yY].Background = Color.Yellow
@@ -611,7 +608,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
              
            Endif
          
-         Else 'не четвертый игрок - поворот направо
+         Else 'не четвертый игрок - поворот налево
          
          If playersBorders[3] = 0 Then
            toDown = 7 - posX
@@ -659,18 +656,20 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
          Endif
          
        Else 'если нужно повернуть
-         If playersBorders[0] = 0 And Dice - posY < 4 Then
-           toLeft = posY
-           toUp = Dice - toLeft
-           xX = 7 - toUp 'Запоминаем изменяемые координаты
-           yY = toUp
-           zZ = board[xX, yY] 'Запоминаем изменяемое значение
+         
+         If Player = 10 Then 'Первый игрок - поворот в дом
+           If playersBorders[0] = 0 Then
+             toLeft = posY
+             toUp = Dice - toLeft
+             xX = 7 - toUp 'Запоминаем изменяемые координаты
+             yY = toUp
+             zZ = board[xX, yY] 'Запоминаем изменяемое значение
            
-           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
-           For s = posY - 1 To 0
-             If board[7, s] <> 0 Then Return 'по дороге занято - хода нет
-           Next
-           If Player = 10 Then ''Если игрок №1 - значит он поворачивает в дом
+             ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             For s = posY - 1 To 0
+               If board[7, s] <> 0 Then Return 'по дороге занято - хода нет
+             Next
+             
              movesLeft = Dice - posY
              If movesLeft > 4 Then Return
              For s = 6 To xX + 1 Step -1
@@ -686,27 +685,33 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
              Else
                posMove = True
              Endif
-             
-           Else ''Не 1й игрок - значит поворачивает вверх
-             For s = 6 To xX + 1 Step -1
-               If board[s, 0] <> 0 Then Return 'по дороге занято - хода нет
-             Next
-             If board[xX, 0] - Player > 0 And board[xX, 0] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
-             
-             If light Then
-               GridView1[xX, 0].Background = Color.Yellow
-               board[xX, 0] = 78
-             Else
-               posMove = True
-             Endif
-           End If
+           Endif 
            
-           'If light Then ''ПОДСВЕЧИВАЕМ ПРАВИЛЬНО ТОЛЬКО ДЛЯ ПЕРВОГО ИГРОКА
-           '  GridView1[7 - toUp, toUp].Background = Color.Yellow
-           '  board[7 - toUp, toUp] = 78
-           'Else
-           '  posMove = True
-           'Endif
+         Else ''Не 1й игрок - значит поворачивает вверх
+           If playersBorders[0] = 0 Then
+           toLeft = posY
+           toUp = Dice - posY
+           xX = 7 - toUp 'Запоминаем изменяемые координаты
+           yY = 0
+           zZ = board[xX, yY] 'Запоминаем изменяемое значение
+           
+           ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+           For s = posY - 1 To 0 Step -1
+             If board[7, s] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           For s = 6 To xX + 1 Step -1
+             If board[s, 0] <> 0 Then Return 'по дороге занято - хода нет
+           Next
+           If board[xX, yY] - Player > 0 And board[xX, yY] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+           
+           If light Then
+             GridView1[xX, yY].Background = Color.Yellow
+             board[xX, yY] = 78
+           Else
+             posMove = True
+           Endif
+         End If
+           
          End If  
        End If
     
@@ -719,7 +724,6 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
             If Dice > movesLeft Then
               Return
             Else 
-              'If board[posX - 1, posY + 1] = 0 Or (board[posX - 1, posY + 1] = 88 And Dice = 1) Then
                 xX = posX - Dice 'Запоминаем изменяемые координаты
                 yY = posY + Dice
                 zZ = board[xX, yY] 'Запоминаем изменяемое значение
@@ -730,7 +734,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
                     If board[s, movesLeft] <> 0 Then Return 'по дороге занято - хода нет
                   Next
                 Next
-                'If zZ - Player > 0 And zZ - Player < 10 Then Return 'в конце пути своя фишка - хода нет
+
                 If zZ = 15 Then Return
                 If light Then
                   GridView1[posX - Dice, posY + Dice].Background = Color.Yellow
@@ -738,7 +742,6 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
                 Else
                   posMove = True
                 Endif
-              'Endif
             Endif
         
          Case 20 '' ДЛЯ ВТОРОГО ИГРОКА
@@ -764,6 +767,54 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
                posMove = True
              Endif
            Endif
+           
+         Case 30 '' ДЛЯ ТРЕТЬЕГО ИГРОКА
+           movesLeft = 3 - posX
+           If Dice > movesLeft Then
+             Return
+           Else
+             xX = posX + Dice 'Запоминаем изменяемые координаты
+             yY = posY - Dice
+             zZ = board[xX, yY] 'Запоминаем изменяемое значение
+             
+             ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             For s = posX + 1 To xX - 1
+               If board[s, 7 - s] <> 0 Then Return 'по дороге занято - хода нет
+             Next
+             
+             If zZ = 35 Then Return 'в конце пути своя фишка - хода нет
+           
+             If light Then
+               GridView1[xX, yY].Background = Color.Yellow
+               board[xX, yY] = 77
+             Else
+               posMove = True
+             Endif
+           Endif
+           
+         Case 40 '' ДЛЯ ЧЕТВЕРТОГО ИГРОКА
+           movesLeft = 3 - (7 - posX)
+           If Dice > movesLeft Then
+             Return
+           Else
+             xX = posX - Dice 'Запоминаем изменяемые координаты
+             yY = posY - Dice
+             zZ = board[xX, yY] 'Запоминаем изменяемое значение
+             
+             ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             For s = posX - 1 To xX + 1 Step -1
+               If board[s, s] <> 0 Then Return 'по дороге занято - хода нет
+             Next
+             
+             If zZ = 45 Then Return 'в конце пути своя фишка - хода нет
+           
+             If light Then
+               GridView1[xX, yY].Background = Color.Yellow
+               board[xX, yY] = 77
+             Else
+               posMove = True
+             Endif
+           Endif
        End Select
    End Select
 
@@ -778,6 +829,10 @@ End
 
 
 Public Sub EndTurn()
+
+'Сначала проверим, не закончилась ли игра
+CheckWin
+If win Then Return
   Player += 10
   Select Case frmStart.Players
    Case 2
@@ -868,7 +923,7 @@ End
 
 Public Sub moveCorrection()
   
-  Select Case board[GridView1.Row, GridView1.Column] 'исправления для изменений
+  Select Case board[GridView1.Row, GridView1.Column] 'исправления для изменений направления движения фишки
          Case 22
            board[GridView1.Row, GridView1.Column] = 25
          Case 25
@@ -888,7 +943,7 @@ End
 Public Sub eat(q As Byte)
   
   Select Case q - (q Mod 10) 'смотрим чья фишка в конце движения
-    Case 10 'если фишка первого игрока
+    Case 10 
       playersFigs[0] -= 1
     Case 20
       playersFigs[1] -= 1
@@ -896,8 +951,6 @@ Public Sub eat(q As Byte)
       playersFigs[2] -= 1
     Case 40
       playersFigs[3] -= 1
-    'Case 80
-      'If board[FigXold, FigYold] Mod 10 = 5 Then playersBorders[(Player / 10) - 1] -= 1
   End Select
 
   statusUpdate
@@ -905,6 +958,7 @@ Public Sub eat(q As Byte)
 End
 
 Public Sub statusUpdate() 'ИЗМЕНЕНИЕ КОЛИЧЕСТВА ФИШЕК В РАМКЕ СТАТУСА
+
 
    Select Case playersFigs[0] 
      Case 0 'на поле не осталось фигур первого игрока
@@ -1021,4 +1075,35 @@ Public Sub statusUpdate() 'ИЗМЕНЕНИЕ КОЛИЧЕСТВА ФИШЕК В
   
 End
 
+Public Sub CheckWin()
+  
+  If board[4, 3] = 15 And board[5, 2] = 15 And board[6, 1] = 15 And board[7, 0] = 15 Then 
+  Message("Первый игрок победил!", "КРУТЯК")
+   frmGame.Close
+   frmStart.Show
+   win = True
+  Endif
+  
+  If board[3, 3] = 25 And board[2, 2] = 25 And board[1, 1] = 25 And board[0, 0] = 25 Then
+   Message("Второй игрок победил!", "КРУТЯК")
+   frmGame.Close
+   frmStart.Show
+   win = True
+  Endif
+  
+  If board[3, 4] = 35 And board[2, 5] = 35 And board[1, 6] = 35 And board[0, 7] = 35 Then
+   Message("Третий игрок победил!", "КРУТЯК")
+   frmGame.Close
+   frmStart.Show
+   win = True
+  Endif
+  
+  If board[4, 4] = 45 And board[5, 5] = 45 And board[6, 6] = 45 And board[7, 7] = 45 Then
+   Message("Четвертый игрок победил!", "КРУТЯК")
+   frmGame.Close
+   frmStart.Show
+   win = True
+  Endif
+  
+End
 

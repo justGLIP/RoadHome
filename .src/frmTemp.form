@@ -21,4 +21,13 @@
   { lblBorders4 Label
     MoveScaled(22,55,24,4)
   }
+  { lblFigXold Label
+    MoveScaled(37,52,24,4)
+  }
+  { lblFigYold Label
+    MoveScaled(37,56,24,4)
+  }
+  { lblBoard Label
+    MoveScaled(28,45,32,4)
+  }
 }
