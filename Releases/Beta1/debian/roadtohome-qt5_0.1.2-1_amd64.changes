@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Wed, 01 Apr 2020 12:00:00 +0000
+Source: roadtohome-qt5
+Binary: roadtohome-qt5
+Architecture: source all
+Version: 0.1.2-1
+Distribution: unstable
+Urgency: low
+Maintainer: justGLIP <justGLIP@yandex.ru>
+Changed-By: justGLIP <justGLIP@yandex.ru>
+Description:
+ roadtohome-qt5 - qt5 package for Дорога домой
+Changes:
+ roadtohome-qt5 (0.1.2-1) unstable; urgency=low
+ .
+   * Бета-тест релиз 1
+Checksums-Sha1:
+ 1eb8936ce46861fea0f2523e7dfef640902c35eb 543 roadtohome-qt5_0.1.2-1.dsc
+ 43f4fd7dadf2b8608e3e430835e7746c0b1e4a94 925 roadtohome-qt5_0.1.2-1.tar.gz
+ af950c44a03d96260a8cf077cc6991c96f1647ba 1416 roadtohome-qt5_0.1.2-1_all.deb
+ 4ecdcfef7bfa191cb1834aa491c9b8712f6eb8c2 4745 roadtohome-qt5_0.1.2-1_amd64.buildinfo
+Checksums-Sha256:
+ d399658c1b5887516e6265f74aba15fd8051d74031985266727ca15896824113 543 roadtohome-qt5_0.1.2-1.dsc
+ 71726939a5d1768b7e334d4217f2f97fce5807d162c9cbffccb263f2a0f2ed04 925 roadtohome-qt5_0.1.2-1.tar.gz
+ 64de38aa9b042acde58186f0500f29ebca489dd11943a799fe5a6f30648d2dc1 1416 roadtohome-qt5_0.1.2-1_all.deb
+ b9d078e280a4a09770393b8d49196b8c3d2d0abba4cd43302ee0431b352af950 4745 roadtohome-qt5_0.1.2-1_amd64.buildinfo
+Files:
+ 3169add02f6579bb361bb06ecd4bfee1 543 contrib/games optional roadtohome-qt5_0.1.2-1.dsc
+ 25bdece34e9c57bbfd624dfd3dbe0394 925 contrib/games optional roadtohome-qt5_0.1.2-1.tar.gz
+ a7865cf4d93d47590c62939b5052f56e 1416 contrib/games optional roadtohome-qt5_0.1.2-1_all.deb
+ c295a825cdd68dcd22f77df0552b4961 4745 contrib/games optional roadtohome-qt5_0.1.2-1_amd64.buildinfo

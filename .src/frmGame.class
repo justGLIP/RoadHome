@@ -38,6 +38,15 @@ Dim j As Byte
 
 win = False
 'Изменяем размер формы под поле 8х8
+
+   With Frame1
+     .x = 650
+     .y = 14
+     .Width = 182
+     .Height = 511
+   End With
+   
+   
    With btnDice
      .x = 700
      .y = 540
@@ -46,9 +55,10 @@ win = False
      .Picture = Picture.Load("Resources/Images/dieGreen1.png")
    End With
    
-   With Me
+   With frmGame
      .Width = 840
      .height = 640
+     .Resizable = False
    End With
 
    With GridView1
@@ -59,6 +69,170 @@ win = False
      .Width = 640
      .Height = 640
    End With
+
+pctOne1.x = 7
+pctOne1.y = 84
+pctOne1.Height = 42
+pctOne1.Width = 42
+pctOne2.x = 700
+pctOne2.y = 98
+pctOne2.Height = 42
+pctOne2.Width = 42
+pctOne3.x = 742
+pctOne3.y = 98
+pctOne3.Height = 42
+pctOne3.Width = 42
+pctOne4.x = 784
+pctOne4.y = 98
+pctOne4.Height = 42
+pctOne4.Width = 42
+
+With lblStatus
+  .x = 7
+  .y = 28
+  .Width = 168
+  .Height = 28
+End With
+
+With lblFirstPlr
+  .x = 7
+  .y = 56
+  .Width = 168
+  .Height = 28
+End With
+
+With lblTwo
+  .x = 658
+  .y = 147
+  .Width = 168
+  .Height = 28
+End With
+
+With lblThree
+  .x = 658
+  .y = 224
+  .Width = 168
+  .Height = 28
+End With
+
+With lblFour
+  .x = 658
+  .y = 301
+  .Width = 168
+  .Height = 28
+End With
+
+With pctTwo1
+  .x = 658
+  .y = 175
+  .Width = 42
+  .Height = 42
+End With
+
+With pctTwo2
+  .x = 700
+  .y = 175
+  .Width = 42
+  .Height = 42
+End With
+
+With pctTwo3
+  .x = 742
+  .y = 175
+  .Width = 42
+  .Height = 42
+End With
+
+With pctTwo4
+  .x = 784
+  .y = 175
+  .Width = 42
+  .Height = 42
+End With
+
+With pctThree1
+  .x = 658
+  .y = 252
+  .Width = 42
+  .Height = 42
+End With
+
+With pctThree2
+  .x = 700
+  .y = 252
+  .Width = 42
+  .Height = 42
+End With
+
+With pctThree3
+  .x = 742
+  .y = 252
+  .Width = 42
+  .Height = 42
+End With
+
+With pctThree4
+  .x = 784
+  .y = 252
+  .Width = 42
+  .Height = 42
+End With
+
+With pctFour1
+  .x = 658
+  .y = 329
+  .Width = 42
+  .Height = 42
+End With
+
+With pctFour2
+  .x = 700
+  .y = 329
+  .Width = 42
+  .Height = 42
+End With
+
+With pctFour3
+  .x = 742
+  .y = 329
+  .Width = 42
+  .Height = 42
+End With
+
+With pctFour4
+  .x = 784
+  .y = 329
+  .Width = 42
+  .Height = 42
+End With
+
+With pctBox3
+  .x = 7
+  .y = 217
+  .Width = 170
+  .Height = 77
+End With
+
+With pctBox4
+  .X = 658
+  .y = 308
+  .Width = 170
+  .Height = 77
+End With
+
+With chkMusic
+  .x = 7
+  .y = 371
+  .Width = 168
+  .Height = 28
+End With
+
+With chkSound
+  .x = 7
+  .y = 399
+  .Width = 168
+  .Height = 28
+End With
 
 ''рисуем шахматную доску и расставляем бордюры
    recolor
@@ -87,7 +261,7 @@ End
 
 Public Sub GridView1_Click()
 
-frmTemp.redraw 'Перерисовываем временную (отладочную) форму
+'frmTemp.redraw 'Перерисовываем временную (отладочную) форму
 
 If moved = True Then 'если уже двинул фишку
    Return 'Не реагировать на клики по полю
@@ -302,7 +476,7 @@ End
 
 Public Sub btnDice_Click()
 
-frmTemp.redraw
+'frmTemp.redraw
 
   If toMove = True Then 
    Return 'это чтобы не давать кидать кубик несколько раз

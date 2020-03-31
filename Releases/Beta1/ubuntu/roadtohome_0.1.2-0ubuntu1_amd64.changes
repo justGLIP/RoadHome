@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Wed, 01 Apr 2020 12:00:00 +0000
+Source: roadtohome
+Binary: roadtohome
+Architecture: source all
+Version: 0.1.2-0ubuntu1
+Distribution: unstable
+Urgency: low
+Maintainer: justGLIP <justGLIP@yandex.ru>
+Changed-By: justGLIP <justGLIP@yandex.ru>
+Description:
+ roadtohome - Настольная игра "Дорога домой" 1-4 иг...
+Changes:
+ roadtohome (0.1.2-0ubuntu1) unstable; urgency=low
+ .
+   * Бета-тест релиз 1
+Checksums-Sha1:
+ c9c51f0bd1eb7c48ad97ead6b6a5df77050c290c 1162 roadtohome_0.1.2-0ubuntu1.dsc
+ 0e911e4e8e0e52e7c51a4b89e1d1c450a8740d67 1504 roadtohome_0.1.2-0ubuntu1.diff.gz
+ 670a72eb739d438dde220689ebb74899ad9c10cd 6483788 roadtohome_0.1.2-0ubuntu1_all.deb
+ da8f6d0cdc73dbcd6ba0312afbb4f14a61b01789 6603 roadtohome_0.1.2-0ubuntu1_amd64.buildinfo
+Checksums-Sha256:
+ 853eda416521c6ff004034a0ed5f1b4c0429d673a1c28b76310c6ae8097d4f9c 1162 roadtohome_0.1.2-0ubuntu1.dsc
+ 7fc412ad1148e7f2169d709a7e73daeefc515a1555adbb3044fe02a9b490f641 1504 roadtohome_0.1.2-0ubuntu1.diff.gz
+ 07bc9e8ea4c88884f2c1db7b9d1a464e20883a5f8cc95ddfba96a3af52189e50 6483788 roadtohome_0.1.2-0ubuntu1_all.deb
+ 9323ae15adbf39a1463b3d689c834e6f95c24428f5812490821444611630a6cf 6603 roadtohome_0.1.2-0ubuntu1_amd64.buildinfo
+Files:
+ 0825e2563ef9a2ba8e01860c4fd22166 1162 contrib/games optional roadtohome_0.1.2-0ubuntu1.dsc
+ 8cbd46d77fdf25ccab66068820b586c7 1504 contrib/games optional roadtohome_0.1.2-0ubuntu1.diff.gz
+ 04cc318e701837b2648b8aa2502a1189 6483788 contrib/games optional roadtohome_0.1.2-0ubuntu1_all.deb
+ 351333e2ae75928aa607777ef21921fb 6603 contrib/games optional roadtohome_0.1.2-0ubuntu1_amd64.buildinfo

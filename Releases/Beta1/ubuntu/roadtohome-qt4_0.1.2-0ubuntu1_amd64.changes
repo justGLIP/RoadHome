@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Wed, 01 Apr 2020 12:00:00 +0000
+Source: roadtohome-qt4
+Binary: roadtohome-qt4
+Architecture: source all
+Version: 0.1.2-0ubuntu1
+Distribution: unstable
+Urgency: low
+Maintainer: justGLIP <justGLIP@yandex.ru>
+Changed-By: justGLIP <justGLIP@yandex.ru>
+Description:
+ roadtohome-qt4 - qt4 package for Дорога домой
+Changes:
+ roadtohome-qt4 (0.1.2-0ubuntu1) unstable; urgency=low
+ .
+   * Бета-тест релиз 1
+Checksums-Sha1:
+ 42bd600c4671c610c80b91344d19bc8a7f1f2400 571 roadtohome-qt4_0.1.2-0ubuntu1.dsc
+ 7c52b649e12ba6d098666a943f1e0ef0ea912b3e 929 roadtohome-qt4_0.1.2-0ubuntu1.tar.gz
+ c60692aa519311da91c520e14a913af54676bc50 1432 roadtohome-qt4_0.1.2-0ubuntu1_all.deb
+ f199c7be7d4d744f4bcf79883e30669c4eaa72d9 4794 roadtohome-qt4_0.1.2-0ubuntu1_amd64.buildinfo
+Checksums-Sha256:
+ ddeb8df7e6662c93e6ae059035d19c28bfbf00e0d7f74e6ce5640f0feecd5f30 571 roadtohome-qt4_0.1.2-0ubuntu1.dsc
+ 2f3c54642cab81299a2f1baef6b952be951b1438f765411a0cf84a2111f4444d 929 roadtohome-qt4_0.1.2-0ubuntu1.tar.gz
+ fc4a80787dec2847d04f7b30426a63a0dc9d75d7acaa2154d1324595dd85f791 1432 roadtohome-qt4_0.1.2-0ubuntu1_all.deb
+ d02a9573710287c2dbfa6bdabcd142f7877ca47290edc865339fb657878d1310 4794 roadtohome-qt4_0.1.2-0ubuntu1_amd64.buildinfo
+Files:
+ 8bd15a5bc471963bd36f9fd91667ae88 571 contrib/games optional roadtohome-qt4_0.1.2-0ubuntu1.dsc
+ 09cbb7b2035ded2f1fae7c2cc2a25909 929 contrib/games optional roadtohome-qt4_0.1.2-0ubuntu1.tar.gz
+ 5153df3bb3c3c59d796c5f4e01178dfe 1432 contrib/games optional roadtohome-qt4_0.1.2-0ubuntu1_all.deb
+ 938a713804978f4b1cd85ee143e4ae0c 4794 contrib/games optional roadtohome-qt4_0.1.2-0ubuntu1_amd64.buildinfo

@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Wed, 01 Apr 2020 12:00:00 +0000
+Source: roadtohome-gtk
+Binary: roadtohome-gtk
+Architecture: source all
+Version: 0.1.2-0ubuntu1
+Distribution: unstable
+Urgency: low
+Maintainer: justGLIP <justGLIP@yandex.ru>
+Changed-By: justGLIP <justGLIP@yandex.ru>
+Description:
+ roadtohome-gtk - gtk package for Дорога домой
+Changes:
+ roadtohome-gtk (0.1.2-0ubuntu1) unstable; urgency=low
+ .
+   * Бета-тест релиз 1
+Checksums-Sha1:
+ 80cfce77ccef500248b57602416de4ba76afff13 571 roadtohome-gtk_0.1.2-0ubuntu1.dsc
+ 13f33154cb04b693514b774b3f933b774f23550c 928 roadtohome-gtk_0.1.2-0ubuntu1.tar.gz
+ 3468cd888a4db4afa65304a992307ee12ca84bca 1432 roadtohome-gtk_0.1.2-0ubuntu1_all.deb
+ 10ed5e69f99f3e008a56e8cda6ef0f18dfc67ec0 4794 roadtohome-gtk_0.1.2-0ubuntu1_amd64.buildinfo
+Checksums-Sha256:
+ 850346d6f9341a69be9ee479f0053b3f8736fc434bfce48558938bf86004076c 571 roadtohome-gtk_0.1.2-0ubuntu1.dsc
+ 231dd8069980fb39b36da580900ae38008b5bc8c0933df4a3614a9fc2472976c 928 roadtohome-gtk_0.1.2-0ubuntu1.tar.gz
+ fa84df74dbf35a23fe71ddafaa8b173a3fe182378ed61172d7c1e761bc36cb9f 1432 roadtohome-gtk_0.1.2-0ubuntu1_all.deb
+ d8e42ce68661d3a13bc41677aaaf15908d3c71490da9e68a9d7aa32be32f3c1e 4794 roadtohome-gtk_0.1.2-0ubuntu1_amd64.buildinfo
+Files:
+ 5f49d4acc6cb5cb1de7b49d8b1b463c8 571 contrib/games optional roadtohome-gtk_0.1.2-0ubuntu1.dsc
+ 7f7e51ebd448bb09b2d6f3123f74744e 928 contrib/games optional roadtohome-gtk_0.1.2-0ubuntu1.tar.gz
+ 249d7cdff4b5c8f4c10002cd7972f2d3 1432 contrib/games optional roadtohome-gtk_0.1.2-0ubuntu1_all.deb
+ 07678a942a77a2aeb9bdb500f60ada20 4794 contrib/games optional roadtohome-gtk_0.1.2-0ubuntu1_amd64.buildinfo
