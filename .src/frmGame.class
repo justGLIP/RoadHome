@@ -108,22 +108,22 @@ If moved = True Then 'если уже двинул фишку
            Select Case GridView1.Column
              Case 0 'меняем с вверх на вправо
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               If playersBorders[1] > 0 Then playersBorders[1] -= 1
+               If playersBorders[1] > 0 And zZ = 88 Then playersBorders[1] -= 1
                moveCorrection
              Case 7 'меняем с вправо на вниз
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               If playersBorders[2] > 0 Then playersBorders[2] -= 1
+               If playersBorders[2] > 0 And zZ = 88 Then playersBorders[2] -= 1
                moveCorrection
            End Select
          Case 7
            Select Case GridView1.Column
              Case 0 'меняем с влево на вверх
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               If playersBorders[0] > 0 Then playersBorders[0] -= 1
+               If playersBorders[0] > 0 And zZ = 88 Then playersBorders[0] -= 1
                moveCorrection
              Case 7 'меняем с вниз на влево
                board[GridView1.Row, GridView1.Column] = board[FigXold, FigYold] + 1
-               If playersBorders[3] > 0 Then playersBorders[3] -= 1
+               If playersBorders[3] > 0 And zZ = 88 Then playersBorders[3] -= 1
                moveCorrection
            End Select
        End Select
@@ -302,6 +302,8 @@ End
 
 Public Sub btnDice_Click()
 
+frmTemp.redraw
+
   If toMove = True Then 
    Return 'это чтобы не давать кидать кубик несколько раз
   Else
@@ -442,6 +444,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
              zZ = board[xX, yY] 'Запоминаем изменяемое значение
              
              ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             If toRight > 3 Then Return
              For s = toUp - 1 To 0 Step -1
                ' Print "s= " & s
                If board[s, 0] <> 0 Then Return 'по дороге занято - хода нет
@@ -517,6 +520,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
              zZ = board[xX, yY] 'Запоминаем изменяемое значение
              
              ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             If toDown > 3 Then Return
              For s = posY + 1 To 7
                If board[0, s] <> 0 Then Return 'по дороге занято - хода нет
              Next
@@ -591,6 +595,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
              zZ = board[xX, yY] 'Запоминаем изменяемое значение
              
              ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             If toLeft > 3 Then Return
              For s = posY + 1 To 7
                If board[s, 7] <> 0 Then Return 'по дороге занято - хода нет
              Next
@@ -621,7 +626,7 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
            For s = posX + 1 To 7
              If board[s, 7] <> 0 Then Return 'по дороге занято - хода нет
            Next
-           For s = 6 To yY - 1 Step -1
+           For s = 6 To yY + 1 Step -1
              If board[7, s] <> 0 Then Return 'по дороге занято - хода нет
            Next
            If board[7, yY] - Player > 0 And board[7, yY] - Player < 10 Then Return 'в конце пути своя фишка - хода нет
@@ -666,12 +671,11 @@ Public Sub possibleMove(posX As Integer, posY As Integer, light As Boolean)
              zZ = board[xX, yY] 'Запоминаем изменяемое значение
            
              ' ПРОВЕРЯЕМ СВОБОДЕН ЛИ ПУТЬ
+             If toUp > 3 Then Return
              For s = posY - 1 To 0
                If board[7, s] <> 0 Then Return 'по дороге занято - хода нет
              Next
              
-             movesLeft = Dice - posY
-             If movesLeft > 4 Then Return
              For s = 6 To xX + 1 Step -1
                For movesLeft = 1 To yY - 1
                  If board[s, movesLeft] <> 0 Then Return 'по дороге занято - хода нет
@@ -878,7 +882,7 @@ If win Then Return
 
   Message("Ход игрока " & Str(Player / 10), "OK")
   btnDice.Picture = Picture.Load("Resources/Images/" & "die" & Str(DiceImg[(Player / 10) - 1]) & Str(Dice) & ".png")
-  moved = False
+  moved = True
   toMove = False
   posMove = False
 
@@ -915,8 +919,8 @@ If posMove = False Then EndTurn
 End
 
 Public Sub btnTest_Click()
-
-
+'frmTemp.redraw
+'Music.Stop
   EndTurn
 
 End
@@ -1081,6 +1085,7 @@ Public Sub CheckWin()
   Message("Первый игрок победил!", "КРУТЯК")
    frmGame.Close
    frmStart.Show
+   Music.Stop
    win = True
   Endif
   
@@ -1088,6 +1093,7 @@ Public Sub CheckWin()
    Message("Второй игрок победил!", "КРУТЯК")
    frmGame.Close
    frmStart.Show
+   Music.Stop
    win = True
   Endif
   
@@ -1095,6 +1101,7 @@ Public Sub CheckWin()
    Message("Третий игрок победил!", "КРУТЯК")
    frmGame.Close
    frmStart.Show
+   Music.Stop
    win = True
   Endif
   
@@ -1102,6 +1109,7 @@ Public Sub CheckWin()
    Message("Четвертый игрок победил!", "КРУТЯК")
    frmGame.Close
    frmStart.Show
+   Music.Stop
    win = True
   Endif
   
