@@ -256,12 +256,13 @@ Public Sub Form_Close()
 
    frmStart.Close
    frmTemp.Close
+   
 End
 
 
 Public Sub GridView1_Click()
 
-'frmTemp.redraw 'Перерисовываем временную (отладочную) форму
+frmTemp.redraw 'Перерисовываем временную (отладочную) форму
 
 If moved = True Then 'если уже двинул фишку
    Return 'Не реагировать на клики по полю
@@ -306,7 +307,8 @@ If moved = True Then 'если уже двинул фишку
        yY = 1
        zZ = 0
        moved = True
-       If Dice <> 6 Then toMove = False
+       'If Dice <> 6 Then
+        toMove = False
       
        If FigXold = 7 And FigYold = 0 Then 'заполняем первые границы (бордеры)
          board[7, 0] = 88 'запоминаем, что на угловой клетке теперь бордюр
@@ -437,7 +439,8 @@ If moved = True Then 'если уже двинул фишку
        
        board[FigXold, FigYold] = 0
        moved = True
-       If Dice <> 6 Then toMove = False
+       'If Dice <> 6 Then 
+       toMove = False
        xX = 5
        yY = 1
        zZ = 0
@@ -476,7 +479,7 @@ End
 
 Public Sub btnDice_Click()
 
-'frmTemp.redraw
+frmTemp.redraw
 
   If toMove = True Then 
    Return 'это чтобы не давать кидать кубик несколько раз
@@ -506,7 +509,8 @@ Public Sub btnDice_Click()
    ''ЕСЛИ ВЫПАЛА ШЕСТЕРКА
    Dim aa, bb As Byte
    If Dice = 6 Then
-     toMove = False
+     CheckMoves
+     If posMove Then toMove = True Else toMove = False
      Select Case Player 'задаем стартовую точку в зависимости от активного игрока
        Case 10 'первый игрок
          aa = 7
@@ -526,6 +530,18 @@ Public Sub btnDice_Click()
      pl = board[aa, bb] - Player
     
      If playersFigs[(Player / 10) - 1] < 4 And (pl > 10 Or pl < 0) Then 'если есть фигуры в запасе и поле дома не занято
+      If Player = 20 Then 'если игрок - комп - ОДНОЗНАЧНО ВЫСТАВИТЬ ФИШКУ
+        'выставить фишку
+         moved = True
+         eat(board[aa, bb])
+         GridView1[aa, bb].Picture = Picture.Load("Resources/Images/" & ChipImg[(Player / 10) - 1])
+         If playersBorders[(Player / 10) - 1] > 0 And board[aa, bb] = 88 Then playersBorders[(Player / 10) - 1] -= 1  'количество бордюров на этой стороне уменьшилось
+         playersFigs[(Player / 10) - 1] += 1 'количество фигур игрока на поле увеличилось
+         board[aa, bb] = Player + (Player / 10) 'на клетку выставлена фигура игрока X с направлением хода по первой линии
+        
+         ''ТУТ ПЕРЕРИСОВЫВАЮТСЯ ФИШКИ В СТАТУСЕ
+         statusUpdate
+      Else
        Message.Title = "Как поступите?"
        If (Message.Question("Выставить новую фишку?", "Да", "Нет")) = 1 Then
          'выставить фишку
@@ -539,13 +555,16 @@ Public Sub btnDice_Click()
          ''ТУТ ПЕРЕРИСОВЫВАЮТСЯ ФИШКИ В СТАТУСЕ
          statusUpdate
        Endif 'это про выставить ли новую фишку
+      Endif 'это про игрок - комп
+      'Else 'если дом занят компу надо проверить возможные ходы
+       ' If Player = 20 Then CheckMoves
      Endif 'это про если есть фигуры в запасе и поле дома не занято
-   End If
+   End If 'это про если шестерка
    
    'Если выпала не 6 или не стал выставлять фишку
    'проверяем, есть ли вообще возможные ходы
-   If Dice <> 6 Then CheckMoves
-  End If 
+   CheckMoves
+  End If 'это про если должен двигаться
   
   End
 
@@ -1060,6 +1079,17 @@ If win Then Return
   toMove = False
   posMove = False
 
+'' СЛЕДУЮЩИЙ ИГРОК - КОМП - ХОД КОМПА
+If Player = 20 Then
+   'Message("Ход компьютера")
+   pcMove
+   
+   While Dice = 6
+   pcMove
+   Wend
+   
+Endif
+
 End
 
 Public Sub CheckMoves()
@@ -1087,7 +1117,7 @@ While i < 4 And posMove = False
     possibleMove(x[i], y[i], False)
     i += 1
 Wend
-If posMove = False Then EndTurn
+If posMove = False And Dice <> 6 Then EndTurn
 
 
 End
@@ -1287,5 +1317,55 @@ Public Sub CheckWin()
    win = True
   Endif
   
+End
+
+Public Sub pcMove()
+
+  Dim a As Byte = 0
+  Dim i, j, b As Byte
+  Dim x As Byte[] = [3, 3, 3, 3]
+  Dim y As Byte[] = [1, 1, 1, 1]
+
+
+    btnDice_Click
+    If Player = 20 Then btnDice_Click 'еще раз бросаем кубик (на случай если перед этим была шестерка)
+  
+  'Находим фишки игрока на поле
+    For i = 0 To 7
+      For j = 0 To 7
+        b = board[i, j] - Player
+        If 0 < b And b < 10 Then
+          x[a] = i
+          y[a] = j
+          a += 1
+        Endif
+      Next
+    Next
+
+  'Проверяем возможные ходы
+  i = 0
+  While i < 4 And posMove = False
+      possibleMove(x[i], y[i], False)
+      i += 1
+  Wend
+
+  If Player = 20 And posMove = True Then
+    
+    frmTemp.lblPCx.Text = x[i]
+    frmTemp.lblPCy.Text = y[i]
+    
+    'Подсвечиваем возможный ход
+    GridView1.Row = x[i]
+    GridView1.Column = y[i]
+    GridView1_Click
+    Wait 2 'ждем 2 секунды
+    
+    'Кликаем на ход
+    GridView1.Row = xX
+    GridView1.Column = yY
+    GridView1_Click
+    
+  Endif
+
 End
 

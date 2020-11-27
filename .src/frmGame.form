@@ -138,14 +138,12 @@
   }
   { btnTest Button
     MoveScaled(113,82,4,4)
-    Visible = False
     Background = Color.Green
     Text = ("1")
   }
   { !txtTest TextBox
     MoveScaled(113,77,4,4)
     #Public = True
-    Visible = False
   }
   { pctBox4 PictureBox
     MoveScaled(94,44,24,11)

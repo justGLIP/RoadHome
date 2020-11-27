@@ -30,4 +30,12 @@
   { lblBoard Label
     MoveScaled(28,45,32,4)
   }
+  { !lblPCx Label
+    MoveScaled(34,34,24,4)
+    #Public = True
+  }
+  { !lblPCy Label
+    MoveScaled(34,38,24,4)
+    #Public = True
+  }
 }

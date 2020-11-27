@@ -24,4 +24,5 @@ lblBorders4.Text = "Borders 4 pl= " & frmGame.playersBorders[3]
 lblFigXold.Text = "FigXold = " & frmGame.FigXold
 lblFigYold.text = "FigYold = " & frmGame.FigYold
 lblBoard.text = "board[FigXold,FigYold]=" & frmGame.board[frmGame.FigXold, frmGame.FigYold]
+
 End

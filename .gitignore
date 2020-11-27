@@ -1,5 +1,5 @@
-#---- Gambas files to ignore (v4)
-# *.gambas
+#---- Gambas files to ignore (v5)
+*.gambas
 .lock
 *~
 core
@@ -11,4 +11,7 @@ vgcore.*
 .lang/*.pot
 .gambas/*
 .settings
+.startup
+.list
+.info
 #----
